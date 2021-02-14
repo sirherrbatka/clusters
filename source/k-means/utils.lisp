@@ -88,12 +88,6 @@
          (reduce #'+))))
 
 
-(defun obtain-result (state)
-  (make 'clusters:result
-        :parameters (clusters:parameters state)
-        :cluster-contents (read-clusters state)))
-
-
 (defun select-new-medoids (state)
   (bind (((:slots %medoids %clusters)
           state))

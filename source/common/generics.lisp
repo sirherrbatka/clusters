@@ -10,7 +10,7 @@
 (defgeneric algorithm-state-initialization-list
     (parameters data &rest arguments &key &allow-other-keys)
   (:method-combination append))
-(defgeneric state-class (parameters))
+(defgeneric algorithm-state-class (parameters))
 (defgeneric run-algorithm (state))
 (defgeneric result-initialization-list (state)
   (:method-combination append))

@@ -14,6 +14,8 @@
    #:result-initialization-list
    #:data
    #:make-algorithm-state
-   #:state-class
+   #:algorithm-state-class
    #:obtain-result
+   #:run-algorithm
+   #:cluster
    #:result))

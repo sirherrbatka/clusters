@@ -30,6 +30,5 @@
                (:module "k-means"
                 :components ((:file "package")
                              (:file "types")
-                             (:file "methods")
-                             (:file "internal")
-                             (:file "external")))))
+                             (:file "utils")
+                             (:file "methods")))))
