@@ -7,7 +7,7 @@
   :description "Cluster algorithms in CL, for CL."
   :depends-on ( :iterate       :alexandria
                 :serapeum      :documentation-utils-extensions
-                :metabang.bind :bordeaux-threads
+                :metabang-bind :bordeaux-threads
                 :lparallel)
   :serial T
   :pathname "source"

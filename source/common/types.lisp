@@ -25,6 +25,8 @@
    (%silhouette-sample-size :initarg :silhouette-sample-size
                             :reader silhouette-sample-size))
   (:default-initargs
+   :key-function #'identity
+   :parallelp nil
    :silhouette-sample-count 15
    :silhouette-sample-size 500))
 

@@ -6,13 +6,13 @@
 
 
 (defmethod clusters:algorithm-state-initialization-list
-    ((parameters parameters) data
-     &rest all &key &allow-other-keys)
+    append ((parameters parameters) data
+             &rest all &key &allow-other-keys)
   (declare (ignore all))
   (let ((medoids-count (read-medoids-count parameters)))
     `(:medoids ,(make-array medoids-count
                             :adjustable t
-                            :fill-pointer (read-medoids-count parameters))
+                            :fill-pointer medoids-count)
       :clusters ,(~> (make-array medoids-count
                                  :adjustable t
                                  :fill-pointer medoids-count)
@@ -56,3 +56,9 @@
 (defmethod clusters:result-initialization-list
     append ((state algorithm-state))
   `(:cluster-contents ,(read-clusters state)))
+
+
+(defmethod initialize-instance :after ((state algorithm-state)
+                                       &rest all)
+  (declare (ignore all))
+  (select-initial-medoids state))

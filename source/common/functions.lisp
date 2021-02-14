@@ -21,4 +21,4 @@
                                        data
                                        arguments))))
     (run-algorithm algorithm-state)
-    (obtrain-result algorithm-state)))
+    (obtain-result algorithm-state)))

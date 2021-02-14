@@ -36,18 +36,18 @@
        nil
        (lambda (data-point
            &aux (data (funcall value-key data-point)))
-         (check-type data (simple-array single-float (*)))
-         (let ((i (iterate
-                    (declare (type fixnum i)
-                             (type (simple-array single-float (*)) medoid)
-                             (type single-float distance))
-                    (for i from 0 below length)
-                    (for medoid = (aref medoids i))
-                    (for distance = (clusters.metric:euclid
-                                     medoid data))
-                    (finding i minimizing distance))))
-           (bt:with-lock-held ((aref locks i))
-             (vector-push-extend data-point (aref clusters i)))))
+         (iterate
+           (declare (type fixnum i)
+                    (type (simple-array single-float (*)) medoid)
+                    (type single-float distance))
+           (for i from 0 below length)
+           (for medoid = (aref medoids i))
+           (for distance = (clusters.metric:euclid
+                            medoid data))
+           (finding i minimizing distance into cluster)
+           (finally
+            (bt:with-lock-held ((aref locks cluster))
+              (vector-push-extend data-point (aref clusters cluster))))))
        (clusters:data state))
       (while (~> (extremum %clusters #'< :key #'length)
                  length

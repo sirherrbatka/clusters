@@ -1,31 +1,27 @@
-(cl:in-package :cl-user)
-(defpackage :k-means-test-suite (:use :cl :prove :iterate))
-(cl:in-package :k-means-test-suite)
+(cl:in-package :clusters.k-means)
 
-
-(plan 2)
+(prove:plan 2)
 
 (defun generate-data-point (size)
-  (cl-ds.utils:transform
-      (lambda (x) (declare (ignore x))
-        (serapeum:~>
-         (serapeum:random-in-range 0 500)
-         (coerce 'single-float)))
-    (make-array size :element-type 'single-float)))
-
+  (map-into (make-array size :element-type 'single-float)
+            (lambda () (random-in-range 0.0 500.0))))
 
 (defparameter *data*
   (iterate
-    (with data = (serapeum:vect))
+    (with data = (vect))
     (for i from 0 below 500)
     (vector-push-extend (generate-data-point 3)
                         data)
     (finally (return data))))
 
+(defparameter *parameters*
+  (make 'parameters
+        :medoids-count 5
+        :distortion-epsilon 50.0))
 
-(let ((clusters (cl-ds.utils.cluster.k-means:k-means *data* 5 50.0)))
-  (is (serapeum:~> clusters cl-ds.utils.cluster:cluster-contents length) 5)
-  (ok (every (lambda (x) (not (zerop (length x))))
-             (serapeum:~> clusters cl-ds.utils.cluster:cluster-contents))))
+(let ((clusters (clusters:cluster *parameters* *data*)))
+  (prove:is (~> clusters clusters:cluster-contents length) 5)
+  (prove:ok (every (lambda (x) (not (zerop (length x))))
+                   (~> clusters clusters:cluster-contents))))
 
-(finalize)
+(prove:finalize)
