@@ -62,7 +62,6 @@
           (lambda (cluster medoid)
             (declare (type (simple-array single-float (*)) medoid)
                      (type (vector t) cluster))
-            (check-type medoid (simple-array single-float (*)))
             (iterate
               (declare (type fixnum size i)
                        (type (simple-array single-float (*)) c)
@@ -71,7 +70,6 @@
               (with size = (length cluster))
               (for i from 0 below size)
               (for c = (funcall value-key (aref cluster i)))
-              (check-type c (simple-array single-float (*)))
               (iterate
                 (declare (type fixnum size i)
                          (type single-float error))
@@ -87,11 +85,12 @@
 
 
 (defun obtain-result (state)
-  (bind (((:slots %silhouette-sample-size %value-key %silhouette-sample-size %clusters)
+  (bind (((:slots %silhouette-sample-size %value-key %clusters
+                  %silhouette-sample-count)
           state))
-    (make 'cluster:clustering-result
+    (make 'clusters:result
           :cluster-contents %clusters
-          :distance-function #'cl-ds.utils.metric:euclid-metric
+          :distance-function #'clusters.metric:euclid
           :silhouette-sample-size %silhouette-sample-size
           :key-function %value-key
           :silhouette-sample-count %silhouette-sample-count)))

@@ -223,6 +223,7 @@
              #:destructuring-ccase
              #:destructuring-ecase)
   (:reexport #:serapeum
+             #:scan
              #:defalias
              #:reshuffle
              #:~>

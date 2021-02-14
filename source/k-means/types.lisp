@@ -37,6 +37,10 @@
    :data (vect)))
 
 
+(defclass k-means ()
+  ())
+
+
 (defmethod initialize-instance :after ((object k-means-algorithm-state)
                                        &rest all)
   (declare (ignore all))

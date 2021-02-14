@@ -14,10 +14,16 @@
   :components ((:file "aux-package")
                (:module "utils"
                 :components ((:file "package")
+                             (:file "maps")
+                             (:file "matrix")
                              (:file "random")))
                (:module "metric"
                 :components ((:file "package")
                              (:file "euclid")))
+               (:module "common"
+                :components ((:file "package")
+                             (:file "types")
+                             (:file "silhouette")))
                (:module "k-means"
                 :components ((:file "package")
                              (:file "types")
