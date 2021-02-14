@@ -22,10 +22,14 @@
                              (:file "euclid")))
                (:module "common"
                 :components ((:file "package")
+                             (:file "generics")
                              (:file "types")
-                             (:file "silhouette")))
+                             (:file "functions")
+                             (:file "silhouette")
+                             (:file "methods")))
                (:module "k-means"
                 :components ((:file "package")
                              (:file "types")
+                             (:file "methods")
                              (:file "internal")
                              (:file "external")))))

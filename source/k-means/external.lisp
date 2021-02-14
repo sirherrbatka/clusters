@@ -1,6 +1,10 @@
 (cl:in-package #:clusters.k-means)
 
 
+(defmethod clusters:distance-function ((parameters parameters))
+  #'clusters.metric:euclid)
+
+
 (-> k-means (vector positive-fixnum non-negative-single-float
                     &key
                     (:silhouette-sample-size (or null positive-fixnum))

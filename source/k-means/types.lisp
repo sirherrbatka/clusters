@@ -1,44 +1,40 @@
 (cl:in-package #:clusters.k-means)
 
 
-(defclass algorithm-state ()
-  ((%data :initarg :data
-          :type vector
-          :reader read-data)
-   (%value-key :initarg :value-key
-               :initarg :key
-               :type function
-               :reader read-value-key)
-   (%silhouette-sample-size :initarg :silhouette-sample-size
-                            :reader silhouette-sample-size)
-   (%silhouette-sample-count :initarg :silhouette-sample-count
-                             :reader silhouette-sample-count)
-   (%clusters :initarg :clusters
+(defclass algorithm-state (clusters:algorithm-state)
+  ((%clusters :initarg :clusters
               :type vector
               :reader read-clusters)
-   (%distortion-epsilon :initarg :distortion-epsilon
-                        :type single-float
-                        :reader read-distortion-epsilon)
    (%medoids :initarg :medoids
              :type vector
-             :accessor access-medoids)
-   (%iterations :initarg :iterations
-                :reader read-iterations)
-   (%medoids-count :initarg :medoids-count
-                   :type non-negative-fixnum
-                   :reader read-medoids-count))
+             :accessor access-medoids))
   (:default-initargs
    :clusters (vect)
-   :value-key #'identity
-   :silhouette-sample-count 15
-   :silhouette-sample-size 500
-   :iterations nil
-   :medoids (vect)
-   :data (vect)))
+   :medoids (vect)))
 
 
-(defclass k-means ()
-  ())
+(defclass parameters (clusters:parameters)
+  ((%medoids-count :initarg :medoids-count
+                   :type non-negative-fixnum
+                   :reader read-medoids-count)
+   (%iterations :initarg :iterations
+                :reader read-iterations)
+   (%distortion-epsilon :initarg :distortion-epsilon
+                        :type single-float
+                        :reader read-distortion-epsilon))
+  (:default-initargs :iterations nil))
+
+
+(defmethod read-medoids-count ((state algorithm-state))
+  (~> state clusters:parameters read-medoids-count))
+
+
+(defmethod read-distortion-epsilon ((state algorithm-state))
+  (~> state clusters:parameters read-distortion-epsilon))
+
+
+(defmethod read-iterations ((state algorithm-state))
+  (~> state clusters:parameters read-iterations))
 
 
 (defmethod initialize-instance :after ((object k-means-algorithm-state)

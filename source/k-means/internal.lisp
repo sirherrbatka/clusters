@@ -2,10 +2,12 @@
 
 
 (defun select-initial-medoids (state)
-  (bind (((:slots %data %clusters %medoids %medoids-count %value-key) state))
+  (bind (((:slots %clusters %medoids) state)
+         (medoids-count (read-medoids-count state)))
     (setf (fill-pointer %medoids) 0)
-    (clusters.utils:draw-random-vector %data %medoids-count %medoids)
-    (map-into %medoids %value-key %medoids)
+    (clusters.utils:draw-random-vector (clusters:data state)
+                                       medoids-count %medoids)
+    (map-into %medoids (clusters:key-function state) %medoids)
     (adjust-array %clusters (fill-pointer %medoids)
                   :fill-pointer (fill-pointer %medoids))
     (map-into %clusters #'vect))
@@ -13,12 +15,12 @@
 
 
 (defun assign-data-points-to-medoids (state)
-  (bind (((:slots %data %clusters %medoids %medoids-count %value-key) state)
+  (bind (((:slots %clusters %medoids) state)
          (clusters %clusters)
          (locks (~> clusters length make-array
                     (map-into (lambda () (bt:make-lock)))))
          (medoids %medoids)
-         (value-key %value-key)
+         (value-key (clusters:key-function state))
          (length (length medoids)))
     (declare (type fixnum length)
              (type simple-vector locks)
@@ -29,7 +31,8 @@
                (setf (fill-pointer cluster) 0))
          clusters)
     (iterate
-      (lparallel:pmap
+      (clusters.utils:pmap
+       (clusters:parallelp state)
        nil
        (lambda (data-point
            &aux (data (funcall value-key data-point)))
@@ -45,7 +48,7 @@
                     (finding i minimizing distance))))
            (bt:with-lock-held ((aref locks i))
              (vector-push-extend data-point (aref clusters i)))))
-       %data)
+       (clusters:data state))
       (while (~> (extremum %clusters #'< :key #'length)
                  length
                  zerop))
@@ -54,10 +57,11 @@
 
 
 (defun distortion (state)
-  (bind (((:slots %data %clusters %medoids %medoids-count %value-key) state)
-         (value-key %value-key))
+  (bind (((:slots %clusters %medoids) state)
+         (value-key (clusters:key-function state)))
     (declare (type function value-key))
-    (~>> (lparallel:pmap
+    (~>> (clusters.utils:pmap
+          (clusters:parallelp state)
           '(vector single-float)
           (lambda (cluster medoid)
             (declare (type (simple-array single-float (*)) medoid)
@@ -85,38 +89,17 @@
 
 
 (defun obtain-result (state)
-  (bind (((:slots %silhouette-sample-size %value-key %clusters
-                  %silhouette-sample-count)
-          state))
-    (make 'clusters:result
-          :cluster-contents %clusters
-          :distance-function #'clusters.metric:euclid
-          :silhouette-sample-size %silhouette-sample-size
-          :key-function %value-key
-          :silhouette-sample-count %silhouette-sample-count)))
-
-
-(defun make-state (data medoids-count distortion-epsilon all)
-  (~> (apply #'make 'algorithm-state
-             :data data
-             :cluster-contents (~> (make-array medoids-count
-                                               :adjustable t
-                                               :fill-pointer medoids-count)
-                                   (map-into #'vect))
-             :medoids (make-array medoids-count
-                                  :adjustable t
-                                  :fill-pointer medoids-count)
-             :medoids-count medoids-count
-             :distortion-epsilon distortion-epsilon
-             all)
-      select-initial-medoids))
+  (make 'clusters:result
+        :parameters (clusters:parameters state)
+        :cluster-contents (read-clusters state)))
 
 
 (defun select-new-medoids (state)
-  (bind (((:slots %medoids %value-key %silhouette-sample-size %clusters)
+  (bind (((:slots %medoids %clusters)
           state))
     (setf %medoids
-          (lparallel:pmap
+          (clusters.utils:pmap
+           (clusters:parallelp state)
            'vector
            (lambda (cluster medoid)
              (iterate
