@@ -21,6 +21,9 @@
                 :components ((:file "package")
                              (:file "euclid")
                              (:file "hausdorff")))
+               (:module "distance"
+                :components ((:file "package")
+                             (:file "group-average")))
                (:module "common"
                 :components ((:file "package")
                              (:file "generics")
