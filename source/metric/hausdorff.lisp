@@ -3,6 +3,7 @@
 
 (defun hausdorff (fn a b
                   &key
+                    (key #'identity)
                     (element-type t)
                     (distance-matrix
                      (make-array (list (length a) (length b))
@@ -17,7 +18,9 @@
     (iterate
       (for eb in-vector b)
       (for ib from 0)
-      (setf (aref distance-matrix ia ib) (funcall fn ea eb))))
+      (setf (aref distance-matrix ia ib) (funcall fn
+                                                  (funcall key ea)
+                                                  (funcall key eb)))))
   (max (iterate
          (for i from 0 below (length a))
          (maximize (iterate
