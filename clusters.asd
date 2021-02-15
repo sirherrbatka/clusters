@@ -19,7 +19,8 @@
                              (:file "random")))
                (:module "metric"
                 :components ((:file "package")
-                             (:file "euclid")))
+                             (:file "euclid")
+                             (:file "hausdorff")))
                (:module "common"
                 :components ((:file "package")
                              (:file "generics")

@@ -1,12 +1,12 @@
-(cl:in-package #:cl-data-structures.utils.metric)
+(cl:in-package #:clusters.metric)
 
 
-(defun hausdorff-metric (fn a b
-                         &key
-                           (element-type t)
-                           (distance-matrix
-                            (make-array (list (length a) (length b))
-                                        :element-type element-type)))
+(defun hausdorff (fn a b
+                  &key
+                    (element-type t)
+                    (distance-matrix
+                     (make-array (list (length a) (length b))
+                                 :element-type element-type)))
   (declare (type vector a) (type vector b)
            (optimize (speed 3)))
   (ensure-functionf fn)
