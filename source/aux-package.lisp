@@ -1,8 +1,7 @@
 (cl:in-package #:cl-user)
 
 (defpackage #:clusters.fancy
-  (:export #:defpackage)
-  (:nicknames #:cl-ds.fancy))
+  (:export #:defpackage))
 
 (cl:in-package #:clusters.fancy)
 
