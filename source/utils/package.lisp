@@ -9,6 +9,7 @@
    #:distance-matrix
    #:pmap
    #:transform
+   #:lazy-shuffle
    #:make-half-matrix
    #:mref
    #:square-row/column->half-matrix-index))

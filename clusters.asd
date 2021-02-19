@@ -31,6 +31,12 @@
                              (:file "functions")
                              (:file "silhouette")
                              (:file "methods")))
+               (:module "pam"
+                :components ((:file "package")
+                             (:file "generics")
+                             (:file "types")
+                             (:file "utils")
+                             (:file "methods")))
                (:module "k-means"
                 :components ((:file "package")
                              (:file "types")
