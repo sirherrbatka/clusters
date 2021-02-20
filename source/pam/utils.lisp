@@ -79,6 +79,158 @@
       (vector-push-extend i (aref cluster-contents assignment)))))
 
 
+(defun clear-unfinished-clusters (state)
+  (let ((cluster-contents (access-cluster-contents state)))
+    (setf #1=(access-unfinished-clusters state)
+          (adjust-array #1#
+                        (length cluster-contents)
+                        :fill-pointer (length cluster-contents)))
+    (map-into (access-unfinished-clusters state) (constantly nil))))
+
+
+(-> choose-effective-medoid (pam-algorithm-state (vector t)) boolean)
+(defun choose-effective-medoid (state cluster)
+  (bind (((:flet swap-medoid (i))
+          (declare (type non-negative-fixnum i))
+          (rotatef (aref cluster i) (aref cluster 0)))
+         (distance-matrix (access-distance-matrix state))
+         (matrix-count (~> distance-matrix
+                           length
+                           clusters.utils:half-matrix-size->count))
+         ((:flet total-distance-to-medoid (&optional old-cost))
+          (iterate
+            (for i from 1 below (length cluster))
+            (for distance = (clusters.utils:mref distance-matrix
+                                                 (the fixnum (aref cluster 0))
+                                                 (the fixnum (aref cluster i))
+                                                 matrix-count))
+            (assert distance)
+            (sum distance into sum)
+            (unless (null old-cost)
+              (while (<= sum old-cost)))
+            (finally (return sum))))
+         (improved-something nil))
+    (iterate
+      (with minimal-distance-to-medoid = (total-distance-to-medoid))
+      (for i from 1 below (length cluster))
+      (swap-medoid i)
+      (for distance = (total-distance-to-medoid
+                       minimal-distance-to-medoid))
+      (minf minimal-distance-to-medoid distance)
+      (for improved = (= distance minimal-distance-to-medoid))
+      (unless improved
+        (swap-medoid i))
+      (setf improved-something
+            (not (null (or improved improved-something)))))
+    improved-something))
+
+
+(defun choose-effective-medoids (state)
+  (let ((unfinished-clusters (access-unfinished-clusters state))
+        (cluster-contents (access-cluster-contents state)))
+    (assert (eql (length unfinished-clusters) (length cluster-contents)))
+    (clusters.utils:pmap-into unfinished-clusters
+                              (curry #'choose-effective-medoid state)
+                              cluster-contents)
+    (order-medoids state)))
+
+
+(defun unfinished-clusters-p (state)
+  (find t (access-unfinished-clusters state)))
+
+
+(defun scan-for-clusters-of-invalid-size (state)
+  (clear-unfinished-clusters state)
+  (let ((merge-threshold (read-merge-threshold state))
+        (split-threshold (read-split-threshold state)))
+    (map-into (access-unfinished-clusters state)
+              (lambda (x)
+                (not (< merge-threshold
+                        (length x)
+                        split-threshold)))
+              (access-cluster-contents state))))
+
+
+(defun fill-reclustering-index-vector (state indexes count-of-eliminated)
+  (iterate
+    (with cluster-contents = (access-cluster-contents state))
+    (with position = 0)
+    (for i from (~> cluster-contents length 1-) downto 0)
+    (repeat count-of-eliminated)
+    (for cluster = (aref cluster-contents i))
+    (iterate
+      (for value in-vector cluster)
+      (setf (aref indexes position) value)
+      (incf position)))
+  indexes)
+
+
+(defun prepare-reclustering-index-vector (state)
+  (bind ((cluster-contents (access-cluster-contents state))
+         (merge-threshold (read-merge-threshold state))
+         (split-threshold (read-split-threshold state))
+         (count-of-eliminated (clusters.utils:swap-if
+                               cluster-contents
+                               (lambda (x)
+                                 (not (< merge-threshold
+                                         x
+                                         split-threshold)))
+                               :key #'length))
+         (count-of-elements (iterate
+                              (for i
+                                   from (~> cluster-contents length 1-)
+                                   downto 0)
+                              (repeat count-of-eliminated)
+                              (sum (~> cluster-contents
+                                       (aref i)
+                                       length))))
+         ((:dflet expected-cluster-count ())
+          (round (/ count-of-elements
+                    (/ (+ split-threshold merge-threshold)
+                       2)))))
+    (iterate
+      (while (zerop (expected-cluster-count)))
+      (until (eql count-of-eliminated (length cluster-contents)))
+      (incf count-of-eliminated)
+      (incf count-of-elements (~>> (length cluster-contents)
+                                   (- _ count-of-eliminated)
+                                   (aref cluster-contents)
+                                   length)))
+    (values
+     (fill-reclustering-index-vector
+      state
+      (make-array count-of-elements :element-type 'non-negative-fixnum)
+      count-of-eliminated)
+     count-of-eliminated
+     (expected-cluster-count))))
+
+
+(defun recluster-clusters-of-invalid-size (state)
+  (declare (optimize (speed 1) (safety 3)))
+  (setf #1=(access-cluster-contents state) (shuffle #1#))
+  (bind (((:values indexes count-of-eliminated expected-cluster-count)
+          (prepare-reclustering-index-vector state))
+         (fresh-state (make
+                       'pam-algorithm-state
+                       :indexes indexes
+                       :distance-matrix %distance-matrix
+                       :merge-threshold %merge-threshold
+                       :split-threshold %split-threshold
+                       :number-of-medoids expected-cluster-count
+                       :select-medoids-attempts-count %select-medoids-attempts-count
+                       :silhouette-sample-size %silhouette-sample-size
+                       :silhouette-sample-count %silhouette-sample-count
+                       :split-merge-attempts-count %split-merge-attempts-count
+                       :input-data %input-data)))
+    (build-pam-clusters fresh-state nil)
+    (decf (fill-pointer %cluster-contents) count-of-eliminated)
+    (map nil
+         (rcurry #'vector-push-extend %cluster-contents)
+         (access-cluster-contents fresh-state))
+    (assert (unique-assigment state))
+    (order-medoids state)))
+
+
 (defun build-clusters (state &optional split-merge)
   (bind ((optimal-content nil)
          (clusters-with-optimal-size nil)
@@ -120,10 +272,10 @@
         (clear-cluster-contents state)
         (choose-initial-medoids state)
         (assign-data-points-to-medoids state))
-      ; TODO
       (clear-unfinished-clusters state)
       (choose-effective-medoids state)
-      (always (unfinished-clusters-p state))
+      (while (unfinished-clusters-p state))
+      ;; TODO
       (finally
        (split-merge)
        (clear-unfinished-clusters state)))))

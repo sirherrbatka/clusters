@@ -16,7 +16,8 @@
                 :components ((:file "package")
                              (:file "maps")
                              (:file "matrix")
-                             (:file "random")))
+                             (:file "random")
+                             (:file "utils")))
                (:module "metric"
                 :components ((:file "package")
                              (:file "euclid")

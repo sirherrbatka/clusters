@@ -8,6 +8,8 @@
    #:map-into-half-matrix
    #:distance-matrix
    #:pmap
+   #:pmap-into
+   #:swap-if
    #:transform
    #:lazy-shuffle
    #:make-half-matrix
