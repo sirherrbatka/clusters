@@ -15,7 +15,3 @@
 
 (defmethod read-select-medoids-attempts-count ((algorithm-state algorithm-state))
   (~> algorithm-state clusters:parameters read-select-medoids-attempts-count))
-
-
-(defmethod read-medoids-count ((algorithm-state algorithm-state))
-  (~> algorithm-state clusters:parameters read-medoids-count))

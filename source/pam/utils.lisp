@@ -210,24 +210,19 @@
   (setf #1=(access-cluster-contents state) (shuffle #1#))
   (bind (((:values indexes count-of-eliminated expected-cluster-count)
           (prepare-reclustering-index-vector state))
+         (cluster-contents (access-cluster-contents state))
          (fresh-state (make
-                       'pam-algorithm-state
+                       'algorithm-state
+                       :parameters (clusters:parameters state)
                        :indexes indexes
-                       :distance-matrix %distance-matrix
-                       :merge-threshold %merge-threshold
-                       :split-threshold %split-threshold
-                       :number-of-medoids expected-cluster-count
-                       :select-medoids-attempts-count %select-medoids-attempts-count
-                       :silhouette-sample-size %silhouette-sample-size
-                       :silhouette-sample-count %silhouette-sample-count
-                       :split-merge-attempts-count %split-merge-attempts-count
-                       :input-data %input-data)))
-    (build-pam-clusters fresh-state nil)
-    (decf (fill-pointer %cluster-contents) count-of-eliminated)
+                       :medoids-count expected-cluster-count
+                       :distance-matrix (access-distance-matrix state)
+                       :data (clusters:data state))))
+    (build-clusters fresh-state nil)
+    (decf (fill-pointer cluster-contents) count-of-eliminated)
     (map nil
-         (rcurry #'vector-push-extend %cluster-contents)
+         (rcurry #'vector-push-extend cluster-contents)
          (access-cluster-contents fresh-state))
-    (assert (unique-assigment state))
     (order-medoids state)))
 
 

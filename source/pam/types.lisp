@@ -39,6 +39,9 @@
     :initarg :cluster-contents
     :type vector
     :accessor access-cluster-contents)
+   (%medoids-count
+    :initarg :medoids-count
+    :reader read-medoids-count)
    (%unfinished-clusters
     :initarg :unfinished-clusters
     :accessor access-unfinished-clusters)
