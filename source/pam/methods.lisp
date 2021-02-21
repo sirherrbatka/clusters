@@ -15,3 +15,18 @@
 
 (defmethod read-select-medoids-attempts-count ((algorithm-state algorithm-state))
   (~> algorithm-state clusters:parameters read-select-medoids-attempts-count))
+
+
+(defmethod clusters:algorithm-state-class ((parameters parameters))
+  'algorithm-state)
+
+
+(defmethod clusters:algorithm-state-initialization-list
+    append ((parameters parameters)
+            data
+            &rest all &key &allow-other-keys)
+  (declare (ignore all))
+  (let ((medoids-count (read-medoids-count parameters)))
+    `(:medoids-count ,medoids-count
+                     )
+    ))

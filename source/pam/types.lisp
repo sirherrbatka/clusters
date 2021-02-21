@@ -37,10 +37,10 @@
 (defclass algorithm-state (clusters:algorithm-state)
   ((%cluster-contents
     :initarg :cluster-contents
-    :type vector
     :accessor access-cluster-contents)
    (%medoids-count
     :initarg :medoids-count
+    :accessor access-medoids-count
     :reader read-medoids-count)
    (%unfinished-clusters
     :initarg :unfinished-clusters
@@ -50,4 +50,14 @@
     :accessor access-distance-matrix)
    (%indexes
     :initarg :indexes
-    :reader read-indexes)))
+    :accessor access-indexes)
+   (%cluster-size
+    :initarg :cluster-size
+    :accessor access-cluster-size))
+  (:default-initargs
+   :cluster-contents nil
+   :indexes nil
+   :cluster-size nil
+   :distance-matrix nil
+   :unfinished-clusters nil
+   ))

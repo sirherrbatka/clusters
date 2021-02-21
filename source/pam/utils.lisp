@@ -52,7 +52,7 @@
 
 (defun choose-initial-medoids (state)
   (iterate
-    (with indexes = (read-indexes state))
+    (with indexes = (access-indexes state))
     (with cluster-contents = (access-cluster-contents state))
     (with generator = (clusters.utils:lazy-shuffle 0 (length indexes)))
     (for cluster in-vector cluster-contents)
@@ -71,8 +71,8 @@
                          (clusters:parallelp state)
                          '(vector (or null fixnum))
                          (curry #'closest-medoid state)
-                         (read-indexes state)))
-    (for i in-vector (read-indexes state))
+                         (access-indexes state)))
+    (for i in-vector (access-indexes state))
     (for assignment in-vector assignments)
     (for medoid-p = (null assignment))
     (unless medoid-p
@@ -235,8 +235,8 @@
          (split-threshold (read-split-threshold state))
          (split-merge-attempts-count
           (read-split-merge-attempts-count state))
-         (cluster-contents (access-cluster-contents state))
-         ((:flet split-merge ())
+         ((:flet split-merge
+            (&aux (cluster-contents (access-cluster-contents state))))
           (when (and split-merge
                      (not (zerop split-merge))
                      split-merge-attempts-count)
@@ -246,7 +246,8 @@
               (repeat (read-split-merge-attempts-count state))
               (recluster-clusters-of-invalid-size state)
               (for right-size =
-                   (/ (count-if (lambda (x) (< merge-threshold x split-threshold))
+                   (/ (count-if (lambda (x)
+                                  (< merge-threshold x split-threshold))
                                 cluster-contents)
                       (length cluster-contents)))
               (ensure clusters-with-optimal-size right-size)
@@ -260,9 +261,8 @@
     (iterate
       (with attempts = select-medoids-attempts-count)
       (for i from 0)
-      (unless (null attempts)
-        (unless (< i attempts)
-          (leave t)))
+      (unless (or (null attempts) (< i attempts))
+        (leave t))
       (when (zerop (rem i 3))
         (clear-cluster-contents state)
         (choose-initial-medoids state)
@@ -274,3 +274,45 @@
       (finally
        (split-merge)
        (clear-unfinished-clusters state)))))
+
+(defun reset-state (object)
+  (declare (optimize (safety 3) (debug 3)))
+  (bind (((:accessors (split-merge-attempts-count read-split-merge-attempts-count)
+                      (merge-threshold read-merge-threshold)
+                      (split-threshold read-split-threshold)
+                      (indexes access-indexes)
+                      (medoids-count access-medoids-count)
+                      (cluster-size access-cluster-size))))
+    (if (zerop %split-merge-attempts-count)
+        (progn (assert (null %merge-threshold))
+               (assert (null %split-threshold)))
+        (assert (< 0 %merge-threshold %split-threshold)))
+    (macrolet ((slot-initialized-p (slot)
+                 `(and (slot-boundp object ',slot)
+                       (not (null ,slot)))))
+      (unless (slot-initialized-p %indexes)
+        (setf %indexes (coerce (~> %input-data length iota)
+                               '(vector non-negative-fixnum))))
+      (let ((length (length %indexes)))
+        (setf %number-of-medoids
+              (if (slot-initialized-p %number-of-medoids)
+                  (max (min %number-of-medoids length) 1)
+                  length))
+        (if (slot-initialized-p %cluster-size)
+            (assert (< 0 %cluster-size))
+            (setf %cluster-size (max 2 (round-to (/ length %number-of-medoids)
+                                                 2))))
+        (unless (slot-initialized-p %cluster-contents)
+          (setf %cluster-contents (make-array %number-of-medoids
+                                              :adjustable t
+                                              :fill-pointer %number-of-medoids))
+          (map-into %cluster-contents
+                    (lambda () (make-array %cluster-size :adjustable t
+                                                    :fill-pointer 1))))
+        (unless (slot-initialized-p %unfinished-clusters)
+          (setf %unfinished-clusters
+                (make-array %number-of-medoids
+                            :element-type 'boolean
+                            :adjustable t
+                            :fill-pointer %number-of-medoids
+                            :initial-element nil)))))))
