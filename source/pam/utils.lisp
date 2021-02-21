@@ -280,39 +280,40 @@
   (bind (((:accessors (split-merge-attempts-count read-split-merge-attempts-count)
                       (merge-threshold read-merge-threshold)
                       (split-threshold read-split-threshold)
+                      (unfinished-clusters access-unfinished-clusters)
                       (indexes access-indexes)
                       (medoids-count access-medoids-count)
-                      (cluster-size access-cluster-size))))
-    (if (zerop %split-merge-attempts-count)
-        (progn (assert (null %merge-threshold))
-               (assert (null %split-threshold)))
-        (assert (< 0 %merge-threshold %split-threshold)))
-    (macrolet ((slot-initialized-p (slot)
-                 `(and (slot-boundp object ',slot)
-                       (not (null ,slot)))))
-      (unless (slot-initialized-p %indexes)
-        (setf %indexes (coerce (~> %input-data length iota)
-                               '(vector non-negative-fixnum))))
-      (let ((length (length %indexes)))
-        (setf %number-of-medoids
-              (if (slot-initialized-p %number-of-medoids)
-                  (max (min %number-of-medoids length) 1)
-                  length))
-        (if (slot-initialized-p %cluster-size)
-            (assert (< 0 %cluster-size))
-            (setf %cluster-size (max 2 (round-to (/ length %number-of-medoids)
-                                                 2))))
-        (unless (slot-initialized-p %cluster-contents)
-          (setf %cluster-contents (make-array %number-of-medoids
-                                              :adjustable t
-                                              :fill-pointer %number-of-medoids))
-          (map-into %cluster-contents
-                    (lambda () (make-array %cluster-size :adjustable t
-                                                    :fill-pointer 1))))
-        (unless (slot-initialized-p %unfinished-clusters)
-          (setf %unfinished-clusters
-                (make-array %number-of-medoids
-                            :element-type 'boolean
-                            :adjustable t
-                            :fill-pointer %number-of-medoids
-                            :initial-element nil)))))))
+                      (data clusters:data)
+                      (cluster-contents access-cluster-contents)
+                      (cluster-size access-cluster-size))
+          object))
+    (if (zerop split-merge-attempts-count)
+        (progn (assert (null merge-threshold))
+               (assert (null split-threshold)))
+        (assert (< 0 merge-threshold split-threshold)))
+    (ensure indexes
+      (coerce (~> data length iota)
+              '(vector non-negative-fixnum)))
+    (let ((length (length indexes)))
+      (setf medoids-count
+            (if (not (null medoids-count))
+                (max (min medoids-count length) 1)
+                length))
+      (if (not (null cluster-size))
+          (assert (<  cluster-size))
+          (setf cluster-size (max 2 (round-to (/ length medoids-count)
+                                              2))))
+      (when (null cluster-contents)
+        (setf cluster-contents (make-array medoids-count
+                                           :adjustable t
+                                           :fill-pointer medoids-count))
+        (map-into cluster-contents
+                  (lambda () (make-array cluster-size :adjustable t
+                                                 :fill-pointer 1))))
+      (when (null unfinished-clusters)
+        (setf unfinished-clusters
+              (make-array medoids-count
+                          :element-type 'boolean
+                          :adjustable t
+                          :fill-pointer medoids-count
+                          :initial-element nil))))))

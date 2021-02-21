@@ -30,3 +30,9 @@
     `(:medoids-count ,medoids-count
                      )
     ))
+
+
+(defmethod initialize-instance :after ((instance algorithm-state)
+                                       &rest initargs)
+  (declare (ignore initargs))
+  (reset-state instance))
