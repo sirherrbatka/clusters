@@ -15,6 +15,10 @@
    #:data
    #:make-algorithm-state
    #:algorithm-state-class
+   #:result-class
+   #:silhouette-cluster-contents
+   #:calculate-silhouette*
+   #:calculate-silhouette
    #:obtain-result
    #:run-algorithm
    #:cluster

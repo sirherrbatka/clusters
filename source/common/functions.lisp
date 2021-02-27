@@ -9,8 +9,9 @@
 
 
 (defun obtain-result (state)
-  (apply #'make 'result
-         (result-initialization-list state)))
+  (apply #'make
+        (result-class state)
+        (result-initialization-list state)))
 
 
 (defun cluster (parameters data &rest arguments)
@@ -22,3 +23,9 @@
                                        arguments))))
     (run-algorithm algorithm-state)
     (obtain-result algorithm-state)))
+
+
+(defun calculate-silhouette (result &optional distance-matrix)
+  (calculate-silhouette* (parameters result)
+                         result
+                         distance-matrix))

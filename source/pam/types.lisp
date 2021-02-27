@@ -2,13 +2,7 @@
 
 
 (defclass parameters (clusters:parameters)
-  ((%distance-function
-    :initarg :distance-function
-    :reader clusters:distance-function)
-   (%minimal-cluster-size
-    :initarg :minimal-cluster-size
-    :reader minimal-cluster-size)
-   (%split-threshold
+  ((%split-threshold
     :initarg :split-threshold
     :reader read-split-threshold)
    (%merge-threshold
@@ -22,15 +16,11 @@
     :reader read-split-merge-attempts-count)
    (%medoids-count
     :initarg :medoids-count
-    :reader read-medoids-count)
-   (%cluster-sample-size
-    :initarg :cluster-sample-size
-    :reader read-cluster-sample-size))
+    :reader read-medoids-count))
   (:default-initargs
    :split-threshold nil
    :merge-threshold nil
    :select-medoids-attempts-count 20
-   :minimal-cluster-size 1
    :split-merge-attempts-count 0))
 
 
@@ -56,8 +46,13 @@
     :accessor access-cluster-size))
   (:default-initargs
    :cluster-contents nil
+   :medoids-count nil
    :indexes nil
    :cluster-size nil
    :distance-matrix nil
-   :unfinished-clusters nil
-   ))
+   :unfinished-clusters nil))
+
+
+(defclass pam-result (clusters:result)
+  ((%distance-matrix :initarg :distance-matrix
+                     :reader read-distance-matrix)))

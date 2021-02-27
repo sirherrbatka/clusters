@@ -11,4 +11,6 @@
   :pathname "source"
   :components ((:file "aux-package")
                (:module "k-means"
+                :components ((:test-file "tests")))
+               (:module "pam"
                 :components ((:test-file "tests")))))

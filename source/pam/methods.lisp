@@ -1,6 +1,10 @@
 (cl:in-package #:clusters.pam)
 
 
+(defmethod clusters:parallelp ((state algorithm-state))
+  (~> state clusters:parameters clusters:parallelp))
+
+
 (defmethod read-split-merge-attempts-count ((algorithm-state algorithm-state))
   (~> algorithm-state clusters:parameters read-split-merge-attempts-count))
 
@@ -24,15 +28,44 @@
 (defmethod clusters:algorithm-state-initialization-list
     append ((parameters parameters)
             data
-            &rest all &key &allow-other-keys)
+            &rest all &key distance-matrix &allow-other-keys)
   (declare (ignore all))
   (let ((medoids-count (read-medoids-count parameters)))
     `(:medoids-count ,medoids-count
-                     )
-    ))
+      :distance-matrix ,distance-matrix)))
 
 
 (defmethod initialize-instance :after ((instance algorithm-state)
                                        &rest initargs)
   (declare (ignore initargs))
-  (reset-state instance))
+  (reset instance))
+
+
+(defmethod clusters:run-algorithm ((state algorithm-state))
+  (declare (optimize (debug 3)))
+  (build-clusters state)
+  state)
+
+
+(defmethod clusters:result-initialization-list
+    append ((state algorithm-state))
+  (let ((cluster-contents (access-cluster-contents state))
+        (data (clusters:data state)))
+    `(:cluster-contents ,(map 'vector (curry #'cluster-values data) cluster-contents)
+      :distance-matrix ,(access-distance-matrix state))))
+
+
+(defmethod clusters:result-class
+    ((parameters parameters))
+  'pam-result)
+
+
+(defmethod clusters:calculate-silhouette* :around
+    ((parameters parameters)
+     clustering-result
+     &optional distance-matrix)
+  (if (null distance-matrix)
+      (call-next-method parameters
+                        clustering-result
+                        (read-distance-matrix clustering-result))
+      (call-next-method)))

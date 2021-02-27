@@ -41,7 +41,7 @@
   (declare (optimize (debug 3)))
   (bind ((sample-size (silhouette-sample-size state))
          (key-function (key-function state))
-         (cluster-contents (cluster-contents state))
+         (cluster-contents (silhouette-cluster-contents state))
          (total-size (reduce #'+ cluster-contents
                              :key #'length
                              :initial-value 0))
@@ -84,52 +84,6 @@
     (sum distance into sum)
     (finally (return (coerce (/ sum (length cluster))
                              'single-float)))))
-
-
-(defun calculate-silhouette (clustering-result &optional distance-matrix)
-  (declare (optimize (speed 1) (safety 1)))
-  (bind (((:flet distance-difference (intra inter))
-          (cond ((null intra) 0.0)
-                ((null inter) -1.0)
-                ((= intra inter) 0.0)
-                (t (coerce (/ (- inter intra) (max intra inter))
-                           'single-float))))
-         (silhouette-sample-count (silhouette-sample-count clustering-result))
-         ((:flet silhouette (sample.whole))
-          (iterate
-            (with (sample . whole) = sample.whole)
-            (with result = (make-array (length sample)
-                                       :element-type 'single-float))
-            (with distance-matrix = (or distance-matrix
-                                        (distance-matrix clustering-result
-                                                         whole)))
-            (for sub in-vector sample)
-            (for i from 0)
-            (for inter-distances = (inter-cluster-distances distance-matrix
-                                                            sub
-                                                            sample))
-            (for intra-distances = (intra-cluster-distances distance-matrix
-                                                            sub))
-            (setf (aref result i)
-                  (~> (map '(vector single-float) #'distance-difference
-                           intra-distances inter-distances)
-                      (reduce #'+ _)
-                      (/ (length sub))
-                      (coerce 'single-float)))
-            (finally (return result)))))
-    (~>> silhouette-sample-count
-         make-array
-         (map-into _
-                   (curry #'select-random-cluster-subsets
-                          clustering-result
-                          (~> distance-matrix not null)))
-         (lparallel:pmap 'list #'silhouette)
-         (apply #'map '(vector single-float)
-                (compose (rcurry #'coerce 'single-float)
-                         #'+))
-         (clusters.utils:transform nil
-                                   (compose (rcurry #'coerce 'single-float)
-                                            (rcurry #'/ silhouette-sample-count))))))
 
 
 (defmethod silhouette :before ((object result))
