@@ -14,7 +14,7 @@
        (parameters (make 'parameters
                          :parallelp nil
                          :merge-threshold 50
-                         :split-threshold 200
+                         :split-threshold 150
                          :split-merge-attempts-count 5
                          :medoids-count 10))
        (distance-matrix (clusters.utils:distance-matrix

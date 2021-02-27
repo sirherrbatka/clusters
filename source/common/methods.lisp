@@ -35,6 +35,7 @@
 (defmethod result-initialization-list
     append ((state algorithm-state))
   `(:parameters ,(parameters state)
+    :indexes ,(indexes state)
     :data ,(data state)))
 
 
@@ -66,12 +67,11 @@
           (iterate
             (with (sample . whole) = sample.whole)
             (with result = (make-array (length sample)
-                                       :element-type 'single-float))
+                                       :element-type 'single-float
+                                       :initial-element 0.0))
             (with distance-matrix =
                   (or distance-matrix
-                      (distance-matrix (parallelp parameters)
-                                       clustering-result
-                                       whole)))
+                      (distance-matrix clustering-result whole)))
             (for sub in-vector sample)
             (for i from 0)
             (for inter-distances = (inter-cluster-distances distance-matrix
@@ -80,11 +80,10 @@
             (for intra-distances = (intra-cluster-distances distance-matrix
                                                             sub))
             (setf (aref result i)
-                  (~> (map '(vector single-float) #'distance-difference
+                  (~> (map 'vector #'distance-difference
                            intra-distances inter-distances)
                       (reduce #'+ _)
-                      (/ (length sub))
-                      (coerce 'single-float)))
+                      (/ (length sub))))
             (finally (return result)))))
     (~>> silhouette-sample-count
          make-array
@@ -92,7 +91,7 @@
                    (curry #'select-random-cluster-subsets
                           clustering-result
                           (~> distance-matrix not null)))
-         (lparallel:pmap 'list #'silhouette)
+         (clusters.utils:pmap (parallelp parameters) 'list #'silhouette)
          (apply #'map '(vector single-float)
                 (compose (rcurry #'coerce 'single-float)
                          #'+))

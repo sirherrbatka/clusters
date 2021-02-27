@@ -10,6 +10,8 @@
   ((%cluster-indexes :initarg :cluster-indexes
                      :type vector
                      :reader cluster-indexes)
+   (%indexes :initarg :indexes
+             :reader indexes)
    (%data :initarg :data
           :type vector
           :reader data)
