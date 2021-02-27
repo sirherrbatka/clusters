@@ -27,7 +27,6 @@
                   :distance-matrix distance-matrix)))
   (declare (optimize (debug 3) (safety 3)))
   (prove:ok (every (lambda (x) (>= (length x) 150))
-                   (clusters:cluster-contents clusters)))
-  )
+                   (clusters:cluster-contents clusters))))
 
 (prove:finalize)

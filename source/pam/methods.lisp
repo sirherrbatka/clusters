@@ -50,9 +50,9 @@
 (defmethod clusters:result-initialization-list
     append ((state algorithm-state))
   (let ((cluster-contents (access-cluster-contents state))
-        (data (clusters:data state)))
-    `(:cluster-contents ,(map 'vector (curry #'cluster-values data) cluster-contents)
-      :distance-matrix ,(access-distance-matrix state))))
+        (distance-matrix (access-distance-matrix state)))
+    `(:cluster-indexes ,cluster-contents
+      :distance-matrix ,distance-matrix)))
 
 
 (defmethod clusters:result-class

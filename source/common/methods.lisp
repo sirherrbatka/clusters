@@ -34,7 +34,8 @@
 
 (defmethod result-initialization-list
     append ((state algorithm-state))
-  `(:parameters ,(parameters state)))
+  `(:parameters ,(parameters state)
+    :data ,(data state)))
 
 
 (defmethod result-class ((parameters parameters))
@@ -45,8 +46,10 @@
   (~> state parameters result-class))
 
 
-(defmethod silhouette-cluster-contents ((state result))
-  (cluster-contents state))
+(defmethod cluster-contents ((result result))
+  (map 'vector
+       (curry #'cluster-values (data result))
+       (cluster-indexes result)))
 
 
 (defmethod calculate-silhouette* ((parameters parameters)
@@ -64,9 +67,11 @@
             (with (sample . whole) = sample.whole)
             (with result = (make-array (length sample)
                                        :element-type 'single-float))
-            (with distance-matrix = (or distance-matrix
-                                        (distance-matrix clustering-result
-                                                         whole)))
+            (with distance-matrix =
+                  (or distance-matrix
+                      (distance-matrix (parallelp parameters)
+                                       clustering-result
+                                       whole)))
             (for sub in-vector sample)
             (for i from 0)
             (for inter-distances = (inter-cluster-distances distance-matrix
@@ -95,3 +100,10 @@
           nil
           (compose (rcurry #'coerce 'single-float)
                    (rcurry #'/ silhouette-sample-count))))))
+
+
+(defmethod initialize-instance :after ((instance algorithm-state)
+                                       &rest initargs)
+  (declare (ignore initargs))
+  (ensure (indexes instance)
+    (~> instance data length iota (coerce 'vector))))

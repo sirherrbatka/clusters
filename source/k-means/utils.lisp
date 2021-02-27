@@ -3,11 +3,13 @@
 
 (defun select-initial-medoids (state)
   (bind (((:slots %clusters %medoids) state)
+         (data (clusters:data state))
          (medoids-count (read-medoids-count state)))
     (setf (fill-pointer %medoids) 0)
-    (clusters.utils:draw-random-vector (clusters:data state)
-                                       medoids-count %medoids)
-    (map-into %medoids (clusters:key-function state) %medoids)
+    (clusters.utils:draw-random-vector (clusters:indexes state)
+                                       medoids-count
+                                       %medoids)
+    (map-into %medoids (curry #'aref data) %medoids)
     (adjust-array %clusters (fill-pointer %medoids)
                   :fill-pointer (fill-pointer %medoids))
     (map-into %clusters #'vect))
@@ -19,6 +21,7 @@
          (clusters %clusters)
          (locks (~> clusters length make-array
                     (map-into (lambda () (bt:make-lock)))))
+         (data (clusters:data state))
          (medoids %medoids)
          (value-key (clusters:key-function state))
          (length (length medoids)))
@@ -35,7 +38,7 @@
        (clusters:parallelp state)
        nil
        (lambda (data-point
-           &aux (data (funcall value-key data-point)))
+           &aux (data (funcall value-key (aref data data-point))))
          (iterate
            (declare (type fixnum i)
                     (type (simple-array single-float (*)) medoid)
@@ -48,7 +51,7 @@
            (finally
             (bt:with-lock-held ((aref locks cluster))
               (vector-push-extend data-point (aref clusters cluster))))))
-       (clusters:data state))
+       (clusters:indexes state))
       (while (~> (extremum %clusters #'< :key #'length)
                  length
                  zerop))
@@ -58,14 +61,14 @@
 
 (defun distortion (state)
   (bind (((:slots %clusters %medoids) state)
+         (data (clusters:data state))
          (value-key (clusters:key-function state)))
     (declare (type function value-key))
     (~>> (clusters.utils:pmap
           (clusters:parallelp state)
           '(vector single-float)
           (lambda (cluster medoid)
-            (declare (type (simple-array single-float (*)) medoid)
-                     (type (vector t) cluster))
+            (declare (type (vector t) cluster))
             (iterate
               (declare (type fixnum size i)
                        (type (simple-array single-float (*)) c)
@@ -73,7 +76,7 @@
               (with sum = 0.0)
               (with size = (length cluster))
               (for i from 0 below size)
-              (for c = (funcall value-key (aref cluster i)))
+              (for c = (funcall value-key (aref data  (aref cluster i))))
               (iterate
                 (declare (type fixnum size i)
                          (type single-float error))
@@ -90,7 +93,9 @@
 
 (defun select-new-medoids (state)
   (bind (((:slots %medoids %clusters)
-          state))
+          state)
+         (value-key (clusters:key-function state))
+         (data (clusters:data state)))
     (setf %medoids
           (clusters.utils:pmap
            (clusters:parallelp state)
@@ -101,7 +106,10 @@
                                               :element-type 'single-float
                                               :initial-element 0.0))
                (for c in-vector cluster)
-               (map-into new-medoid #'+ new-medoid c)
+               (map-into new-medoid
+                         #'+
+                         new-medoid
+                         (funcall value-key (aref data c)))
                (finally
                 (return (map-into new-medoid
                                   (rcurry #'/ (length cluster))

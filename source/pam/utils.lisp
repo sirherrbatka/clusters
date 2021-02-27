@@ -54,7 +54,7 @@
 
 (defun choose-initial-medoids (state)
   (iterate
-    (with indexes = (access-indexes state))
+    (with indexes = (clusters:indexes state))
     (with cluster-contents = (access-cluster-contents state))
     (with generator = (clusters.utils:lazy-shuffle 0 (length indexes)))
     (for cluster in-vector cluster-contents)
@@ -73,8 +73,8 @@
                          (clusters:parallelp state)
                          '(vector (or null fixnum))
                          (curry #'closest-medoid state)
-                         (access-indexes state)))
-    (for i in-vector (access-indexes state))
+                         (clusters:indexes state)))
+    (for i in-vector (clusters:indexes state))
     (for assignment in-vector assignments)
     (for medoid-p = (null assignment))
     (unless medoid-p
@@ -280,7 +280,6 @@
                       (merge-threshold read-merge-threshold)
                       (split-threshold read-split-threshold)
                       (unfinished-clusters access-unfinished-clusters)
-                      (indexes access-indexes)
                       (state-medoids-count access-medoids-count)
                       (data clusters:data)
                       (cluster-contents access-cluster-contents)
@@ -292,10 +291,7 @@
         (progn (assert (null merge-threshold))
                (assert (null split-threshold)))
         (assert (< 0 merge-threshold split-threshold)))
-    (ensure indexes
-      (coerce (~> data length iota)
-              '(vector non-negative-fixnum)))
-    (let ((length (length indexes)))
+    (let ((length (length (clusters:indexes object))))
       (when (null state-medoids-count)
         (setf state-medoids-count
               (if (not (null medoids-count))
@@ -319,9 +315,3 @@
                           :adjustable t
                           :fill-pointer medoids-count
                           :initial-element nil))))))
-
-
-(defun cluster-values (data index-vector)
-  (map 'vector
-       (lambda (i) (aref data i))
-       index-vector))

@@ -38,16 +38,12 @@
    (%distance-matrix
     :initarg :distance-matrix
     :accessor access-distance-matrix)
-   (%indexes
-    :initarg :indexes
-    :accessor access-indexes)
    (%cluster-size
     :initarg :cluster-size
     :accessor access-cluster-size))
   (:default-initargs
    :cluster-contents nil
    :medoids-count nil
-   :indexes nil
    :cluster-size nil
    :distance-matrix nil
    :unfinished-clusters nil))

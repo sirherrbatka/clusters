@@ -5,7 +5,6 @@
 (defgeneric parameters (result))
 (defgeneric cluster-contents (result))
 (defgeneric silhouette (result))
-(defgeneric silhouette-cluster-contents (result))
 (defgeneric data (result))
 (defgeneric key-function (parameters))
 (defgeneric algorithm-state-initialization-list
@@ -16,5 +15,8 @@
 (defgeneric result-initialization-list (state)
   (:method-combination append))
 (defgeneric result-class (parameters))
+(defgeneric cluster-indexes (result))
+(defgeneric indexes (algorithm-state))
+(defgeneric (setf indexes) (new-value algorithm-state))
 (defgeneric calculate-silhouette* (parameters result
                                    &optional distance-matrix))

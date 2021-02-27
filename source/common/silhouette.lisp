@@ -18,8 +18,8 @@
        cluster))
 
 
-(defun distance-matrix (state whole)
-  (clusters.utils:distance-matrix t
+(defun distance-matrix (parallelp state whole)
+  (clusters.utils:distance-matrix parallelp
                                   (distance-function state)
                                   whole))
 

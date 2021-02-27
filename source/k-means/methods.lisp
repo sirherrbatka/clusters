@@ -55,7 +55,7 @@
 
 (defmethod clusters:result-initialization-list
     append ((state algorithm-state))
-  `(:cluster-contents ,(read-clusters state)))
+  `(:cluster-indexes ,(read-clusters state)))
 
 
 (defmethod initialize-instance :after ((state algorithm-state)
