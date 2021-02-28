@@ -60,14 +60,12 @@
           (cond ((null intra) 0.0)
                 ((null inter) -1.0)
                 ((= intra inter) 0.0)
-                (t (coerce (/ (- inter intra) (max intra inter))
-                           'single-float))))
+                (t (/ (- inter intra) (max intra inter)))))
          (silhouette-sample-count (silhouette-sample-count clustering-result))
          ((:flet silhouette (sample.whole))
           (iterate
             (with (sample . whole) = sample.whole)
             (with result = (make-array (length sample)
-                                       :element-type 'single-float
                                        :initial-element 0.0))
             (with distance-matrix =
                   (or distance-matrix
@@ -92,13 +90,10 @@
                           clustering-result
                           (~> distance-matrix not null)))
          (clusters.utils:pmap (parallelp parameters) 'list #'silhouette)
-         (apply #'map '(vector single-float)
-                (compose (rcurry #'coerce 'single-float)
-                         #'+))
+         (apply #'map 'vector #'+)
          (clusters.utils:transform
           nil
-          (compose (rcurry #'coerce 'single-float)
-                   (rcurry #'/ silhouette-sample-count))))))
+          (rcurry #'/ silhouette-sample-count)))))
 
 
 (defmethod initialize-instance :after ((instance algorithm-state)
