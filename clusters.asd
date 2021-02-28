@@ -31,6 +31,8 @@
                              (:file "hausdorff")))
                (:module "distance"
                 :components ((:file "package")
+                             (:file "docstrings")
+                             (:file "bhattacharyya")
                              (:file "group-average")))
                (:module "common"
                 :components ((:file "package")

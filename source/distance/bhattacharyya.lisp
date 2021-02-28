@@ -1,9 +1,10 @@
-(cl:in-package #:cl-data-structures.utils.distance)
+(cl:in-package #:clusters.distance)
 
 
-(-> bhattacharyya-distance ((vector single-float) (vector single-float))
-    single-float)
-(defun bhattacharyya-distance (h1 h2)
+(-> bhattacharyya (t t) single-float)
+(defun bhattacharyya (h1 h2)
+  (check-type h1 (vector single-float))
+  (check-type h2 (vector single-float))
   (let* ((mean1 (mean h1))
          (mean2 (mean h2))
          (score (iterate
