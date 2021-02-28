@@ -2,8 +2,8 @@
 
 
 (defun euclid (a b)
-  (declare (type (simple-array single-float (*)) a b)
-           (optimize (speed 3)))
+  (check-type a (simple-array single-float (*)))
+  (check-type b (simple-array single-float (*)))
   (let ((length-a (length a))
         (length-b (length b)))
     (assert (eql length-a length-b))

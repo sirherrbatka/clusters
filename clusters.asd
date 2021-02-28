@@ -20,7 +20,14 @@
                              (:file "utils")))
                (:module "metric"
                 :components ((:file "package")
+                             (:file "docstrings")
                              (:file "euclid")
+                             (:file "svr")
+                             (:file "levenshtein")
+                             (:file "lcs")
+                             (:file "hellinger")
+                             (:file "earth-mover")
+                             (:file "average")
                              (:file "hausdorff")))
                (:module "distance"
                 :components ((:file "package")
