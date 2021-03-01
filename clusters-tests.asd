@@ -1,5 +1,5 @@
-(asdf:defsystem clusters
-  :name "clusters"
+(asdf:defsystem clusters-tests
+  :name "clusters-tests"
   :version "0.0.0"
   :license "BSD simplified"
   :author "Marek Kochanowicz"
@@ -9,8 +9,7 @@
   :defsystem-depends-on (:prove-asdf)
   :serial T
   :pathname "source"
-  :components ((:file "aux-package")
-               (:module "k-means"
+  :components ((:module "k-means"
                 :components ((:test-file "tests")))
                (:module "pam"
                 :components ((:test-file "tests")))))
