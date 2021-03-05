@@ -48,6 +48,11 @@
                              (:file "types")
                              (:file "utils")
                              (:file "methods")))
+               (:module "clara"
+                :components ((:file "package")
+                             (:file "generics")
+                             (:file "types")
+                             (:file "methods")))
                (:module "k-means"
                 :components ((:file "package")
                              (:file "types")

@@ -8,6 +8,7 @@
    #:silhouette-sample-count
    #:silhouette
    #:cluster-contents
+   #:cluster-indexes
    #:parameters
    #:algorithm-state
    #:algorithm-state-initialization-list

@@ -1,10 +1,6 @@
 (cl:in-package #:clusters.pam)
 
 
-(defmethod clusters:parallelp ((state algorithm-state))
-  (~> state clusters:parameters clusters:parallelp))
-
-
 (defmethod read-split-merge-attempts-count ((algorithm-state algorithm-state))
   (~> algorithm-state clusters:parameters read-split-merge-attempts-count))
 
