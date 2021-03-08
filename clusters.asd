@@ -17,7 +17,8 @@
                              (:file "maps")
                              (:file "matrix")
                              (:file "random")
-                             (:file "utils")))
+                             (:file "utils")
+                             (:file "partition")))
                (:module "metric"
                 :components ((:file "package")
                              (:file "docstrings")
@@ -52,6 +53,7 @@
                 :components ((:file "package")
                              (:file "generics")
                              (:file "types")
+                             (:file "utils")
                              (:file "methods")))
                (:module "k-means"
                 :components ((:file "package")

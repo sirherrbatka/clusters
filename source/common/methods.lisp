@@ -25,10 +25,11 @@
     append ((parameters parameters)
             data
             &rest arguments
-            &key
+            &key indexes
             &allow-other-keys)
   (declare (ignore arguments))
   `(:parameters ,parameters
+    :indexes ,indexes
     :data ,data))
 
 
@@ -61,7 +62,7 @@
                 ((null inter) -1.0)
                 ((= intra inter) 0.0)
                 (t (/ (- inter intra) (max intra inter)))))
-         (silhouette-sample-count (silhouette-sample-count clustering-result))
+         (silhouette-sample-count (silhouette-sample-count parameters))
          ((:flet silhouette (sample.whole))
           (iterate
             (with (sample . whole) = sample.whole)

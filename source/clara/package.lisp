@@ -1,4 +1,4 @@
-(cl:defpackage #:clusters.clara
+(cl:defpackage #:clusters.clarans
   (:use #:cl #:clusters.aux-package)
   (:export
    #:parameters))

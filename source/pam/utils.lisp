@@ -275,6 +275,7 @@
        (split-merge)
        (clear-unfinished-clusters state)))))
 
+
 (defun reset (object)
   (bind (((:accessors (split-merge-attempts-count read-split-merge-attempts-count)
                       (merge-threshold read-merge-threshold)

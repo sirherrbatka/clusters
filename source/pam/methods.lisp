@@ -38,7 +38,6 @@
 
 
 (defmethod clusters:run-algorithm ((state algorithm-state))
-  (declare (optimize (debug 3)))
   (build-clusters state)
   state)
 

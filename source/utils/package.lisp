@@ -11,6 +11,7 @@
    #:pmap-into
    #:swap-if
    #:transform
+   #:seed
    #:lazy-shuffle
    #:make-half-matrix
    #:mref

@@ -1,4 +1,4 @@
-(cl:in-package #:clusters.clara)
+(cl:in-package #:clusters.clarans)
 
 
 (defgeneric pam (parameters))
