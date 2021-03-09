@@ -42,7 +42,8 @@
              ((= (aref y index) cluster)
               (setf (aref d index) distance)
               (iterate
-                (declare (type fixnum j))
+                (declare (type fixnum j)
+                         (type real distance))
                 (for j from 0 below k)
                 (unless (= j cluster)
                   (next-iteration))
