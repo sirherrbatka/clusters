@@ -24,12 +24,10 @@
 (defmethod algorithm-state-initialization-list
     append ((parameters parameters)
             data
-            &rest arguments
-            &key indexes
+            &rest arguments &key
             &allow-other-keys)
   (declare (ignore arguments))
   `(:parameters ,parameters
-    :indexes ,indexes
     :data ,data))
 
 

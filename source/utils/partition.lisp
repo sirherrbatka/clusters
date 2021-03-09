@@ -13,15 +13,14 @@
       (for prev from 0)
       (for medoid  = (aref data (aref medoids prev)))
       (iterate
-        (for i from 0 below n)
-        (for index = (aref indexes i))
+        (for index in-vector indexes)
         (for datum = (aref data index))
         (for distance = (funcall distance-function
                                  datum
                                  medoid))
         (when (< distance (aref d j))
-          (setf (aref d i) (coerce distance 'double-float)
-                (aref y i) prev)))
+          (setf (aref d index) (coerce distance 'double-float)
+                (aref y index) prev)))
       (handler-case
           (when (< j k)
             (iterate

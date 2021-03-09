@@ -30,17 +30,18 @@
 (defmethod clusters:run-algorithm ((state algorithm-state))
   (bind ((data (clusters:data state))
          (indexes (clusters:indexes state))
+         (parallelp (clusters:parallelp state))
          (n (length indexes))
          (distance-function (clusters:distance-function state))
          (medoids-count (medoids-count state))
          (new-medoids (make-array medoids-count :initial-element 0))
-         (new-y (make-array n :initial-element 0))
+         (new-y (make-array n :initial-element 0 :element-type 'fixnum))
          (new-d (make-array n :initial-element 0.0d0
                               :element-type 'double-float))
          ((:accessors y medoids distortion d)
           state))
     (ensure medoids (make-array medoids-count :initial-element 0))
-    (ensure y (make-array n :initial-element 0))
+    (ensure y (make-array n :initial-element 0 :element-type 'fixnum))
     (ensure d (clusters.utils:seed data indexes medoids
                                    y distance-function))
     (ensure distortion (handler-case (reduce #'+ d)
@@ -52,17 +53,16 @@
       (with max-neighbor = (max-neighbor state))
       (with neighbor = 1)
       (until (= neighbor max-neighbor))
-      (for random-neighbor-distortion
-           = (random-neighbor data indexes new-medoids
-                              new-y new-d distance-function))
+      (random-neighbor parallelp data indexes new-medoids
+                       new-y new-d distance-function)
+      (for random-neighbor-distortion = (reduce #'+ new-d))
       (if (< random-neighbor-distortion distortion)
           (progn
             (setf neighbor 1
                   distortion random-neighbor-distortion)
             (clusters.utils:copy-into medoids new-medoids)
             (clusters.utils:copy-into y new-y)
-            (clusters.utils:copy-into d new-d)
-            (next-iteration))
+            (clusters.utils:copy-into d new-d))
           (progn
             (clusters.utils:copy-into new-medoids medoids)
             (clusters.utils:copy-into new-y y)

@@ -1,63 +1,61 @@
 (cl:in-package #:clusters.clarans)
 
 
-(defun index-sample (state indexes)
-  (let* ((sample-size (sample-size state))
-         (result-size (min (length indexes)
-                           sample-size))
-         (result (make-array result-size :element-type 'fixnum))
-         (shuffle-table (make-hash-table)))
-    (iterate
-      (for i from 0 below result-size)
-      (setf (aref result i) i)
-      (for random = (~>> (length indexes)
-                         (random-in-range i)
-                         (aref indexes)))
-      (rotatef (aref result i)
-               (gethash random shuffle-table random))
-      (finally (return result)))))
-
-
 (defun contains (medoids medoid)
   (not (null (position medoid medoids :test 'eql))))
 
 
-(defun random-medoid (indexes medoids)
+(-> random-medoid (fixnum simple-vector) fixnum)
+(defun random-medoid (n medoids)
   (iterate
-    (with n = (length indexes))
-    (for medoid = (~>> n random (aref indexes)))
+    (for medoid = (random n))
     (finding medoid such-that (not (contains medoids medoid)))))
 
 
-(defun random-neighbor (data indexes medoids y d distance-function)
-  (declare (optimize (debug 3)))
+(defun random-neighbor (parallelp data indexes medoids y d distance-function)
+  (declare (type (simple-array double-float (*)) d)
+           (type vector data)
+           (type (simple-array fixnum (*)) y)
+           (type simple-vector indexes medoids))
   (let* ((n (length indexes))
          (k (length medoids))
          (cluster (random k))
-         (medoid (random-medoid indexes medoids)))
-    (iterate
-      (for i from 0 below n)
-      (for distance = (coerce (funcall distance-function
-                                       (aref data (aref indexes i))
-                                       (aref data (aref indexes medoid)))
-                              'double-float))
-      (cond ((> (aref d i) distance)
-             (setf (aref y i) cluster
-                   (aref d i) distance))
-            ((= (aref y i) cluster)
-             (setf (aref d i) distance)
-             (iterate
-               (for j from 0 below k)
-               (unless (= j cluster)
-                 (next-iteration))
-               (for distance = (coerce (funcall distance-function
-                                                (aref data (aref indexes i))
-                                                (aref data (aref medoids j)))
-                                       'double-float))
-               (when (> (aref d i) distance)
-                 (setf (aref d i) distance
-                       (aref y i) j))))))
-    (reduce #'+ d)))
+         (distance-function (ensure-function distance-function))
+         (medoid (random-medoid n medoids)))
+    (declare (type fixnum n k cluster medoid))
+    (clusters.utils:pmap
+     parallelp
+     nil
+     (lambda (index &aux
+                 (datum (aref data index))
+                 (distance (coerce (funcall distance-function
+                                            datum
+                                            (aref data medoid))
+                                      'double-float)))
+       (declare (type double-float distance)
+                (optimize (speed 3))
+                (type fixnum index))
+       (cond ((> (aref d index) distance)
+              (setf (aref y index) cluster
+                    (aref d index) distance)
+              nil)
+             ((= (aref y index) cluster)
+              (setf (aref d index) distance)
+              (iterate
+                (declare (type fixnum j)
+                         (type double-float distance))
+                (for j from 0 below k)
+                (unless (= j cluster)
+                  (next-iteration))
+                (for distance = (coerce (funcall distance-function
+                                                 datum
+                                                 (~>> (aref medoids j)
+                                                      (aref data)))
+                                        'double-float))
+                (when (> (aref d index) distance)
+                  (setf (aref d index) distance
+                        (aref y index) j))))))
+     indexes)))
 
 
 (defun to-cluster-contents (y indexes medoids-counts)
