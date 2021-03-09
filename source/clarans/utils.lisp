@@ -42,18 +42,16 @@
              ((= (aref y index) cluster)
               (setf (aref d index) distance)
               (iterate
-                (declare (type fixnum j)
-                         (type double-float distance))
+                (declare (type fixnum j))
                 (for j from 0 below k)
                 (unless (= j cluster)
                   (next-iteration))
-                (for distance = (coerce (funcall distance-function
-                                                 datum
-                                                 (~>> (aref medoids j)
-                                                      (aref data)))
-                                        'double-float))
+                (for distance = (funcall distance-function
+                                         datum
+                                         (~>> (aref medoids j)
+                                              (aref data))))
                 (when (> (aref d index) distance)
-                  (setf (aref d index) distance
+                  (setf (aref d index) (coerce distance 'double-float)
                         (aref y index) j))))))
      indexes)))
 
