@@ -34,13 +34,17 @@
          (n (length indexes))
          (distance-function (clusters:distance-function state))
          (medoids-count (medoids-count state))
-         (new-medoids (make-array medoids-count :initial-element 0))
+         (new-medoids (make-array medoids-count
+                                  :element-type 'fixnum
+                                  :initial-element 0))
          (new-y (make-array n :initial-element 0 :element-type 'fixnum))
          (new-d (make-array n :initial-element 0.0d0
                               :element-type 'double-float))
          ((:accessors y medoids distortion d)
           state))
-    (ensure medoids (make-array medoids-count :initial-element 0))
+    (ensure medoids (make-array medoids-count
+                                :initial-element 0
+                                :element-type 'fixnum))
     (ensure y (make-array n :initial-element 0 :element-type 'fixnum))
     (ensure d (clusters.utils:seed data indexes medoids
                                    y distance-function))
@@ -60,9 +64,12 @@
           (progn
             (setf neighbor 1
                   distortion random-neighbor-distortion)
-            (clusters.utils:copy-into medoids new-medoids)
-            (clusters.utils:copy-into y new-y)
-            (clusters.utils:copy-into d new-d))
+            (clusters.utils:copy-into (the index-array medoids)
+                                      (the index-array new-medoids))
+            (clusters.utils:copy-into (the index-array y)
+                                      (the index-array new-y))
+            (clusters.utils:copy-into (the (simple-array double-float (*)) d)
+                                      (the (simple-array double-float (*)) new-d)))
           (progn
             (clusters.utils:copy-into new-medoids medoids)
             (clusters.utils:copy-into new-y y)

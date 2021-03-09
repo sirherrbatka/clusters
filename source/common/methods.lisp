@@ -99,4 +99,9 @@
                                        &rest initargs)
   (declare (ignore initargs))
   (ensure (indexes instance)
-    (~> instance data length iota (coerce 'vector))))
+    (iterate
+      (with n = (~> instance data length))
+      (with result = (make-array n :element-type 'fixnum))
+      (for i from 0 below n)
+      (setf (aref result i) i)
+      (finally (return result)))))

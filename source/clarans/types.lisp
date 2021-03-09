@@ -1,6 +1,10 @@
 (cl:in-package #:clusters.clarans)
 
 
+(deftype index-array ()
+  `(simple-array fixnum (*)))
+
+
 (defclass parameters (clusters:parameters)
   ((%distance-function :initarg :distance-function
                        :reader clusters:distance-function)

@@ -5,7 +5,7 @@
   (not (null (position medoid medoids :test 'eql))))
 
 
-(-> random-medoid (fixnum simple-vector) fixnum)
+(-> random-medoid (fixnum index-array) fixnum)
 (defun random-medoid (n medoids)
   (iterate
     (for medoid = (random n))
@@ -15,8 +15,7 @@
 (defun random-neighbor (parallelp data indexes medoids y d distance-function)
   (declare (type (simple-array double-float (*)) d)
            (type vector data)
-           (type (simple-array fixnum (*)) y)
-           (type simple-vector indexes medoids))
+           (type index-array y indexes medoids))
   (let* ((n (length indexes))
          (k (length medoids))
          (cluster (random k))
@@ -43,14 +42,15 @@
               (setf (aref d index) distance)
               (iterate
                 (declare (type fixnum j)
-                         (type real distance))
+                         (type double-float distance))
                 (for j from 0 below k)
                 (unless (= j cluster)
                   (next-iteration))
-                (for distance = (funcall distance-function
-                                         datum
-                                         (~>> (aref medoids j)
-                                              (aref data))))
+                (for distance = (coerce (funcall distance-function
+                                                 datum
+                                                 (~>> (aref medoids j)
+                                                      (aref data)))
+                                        'double-float))
                 (when (> (aref d index) distance)
                   (setf (aref d index) (coerce distance 'double-float)
                         (aref y index) j))))))
