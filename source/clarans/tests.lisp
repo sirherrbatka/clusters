@@ -21,7 +21,6 @@
                   parameters
                   data)))
   (declare (optimize (debug 3) (safety 3)))
-  (print (clusters:cluster-contents clusters))
   (prove:is (length (clusters:cluster-contents clusters))
             10))
 
