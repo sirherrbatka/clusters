@@ -7,11 +7,17 @@
    (%max-neighbor :initarg :max-neighbor
                   :reader max-neighbor)
    (%medoids-count :initarg :medoids-counts
-                   :reader medoids-counts)))
+                   :reader medoids-count)))
 
 
 (defclass algorithm-state (clusters:algorithm-state)
-  ((%cluster-contents :initarg :cluster-contents
-                      :accessor access-cluster-contents))
+  ((%y :initarg :y
+       :accessor y)
+   (%medoids :initarg :medoids
+             :accessor medoids)
+   (%distortion :initarg :distortion
+                :accessor distortion)
+   (%d :initarg :d
+       :accessor d))
   (:default-initargs
-   :cluster-contents nil))
+   :y nil :medoids nil :distortion nil :d nil))

@@ -1,16 +1,17 @@
 (cl:in-package #:clusters.utils)
 
 
-(defun seed (data indexes output medoids y distance-function)
+(defun seed (data indexes medoids y distance-function)
   (bind ((n (length indexes))
          (k (length medoids))
          (d (make-array n
                         :element-type 'double-float
                         :initial-element most-positive-double-float)))
+    (setf (aref medoids 0) (aref indexes (random n)))
     (iterate
       (for j from 1 to k)
       (for prev from 0)
-      (for medoid  = (aref data (aref output prev)))
+      (for medoid  = (aref data (aref medoids prev)))
       (iterate
         (for index in-vector indexes)
         (for datum = (aref data index))
