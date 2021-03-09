@@ -19,26 +19,28 @@
 
 
 (defun contains (medoids medoid)
-  (not (null (position medoids medoid :test 'eql))))
+  (not (null (position medoid medoids :test 'eql))))
 
 
-(defun random-medoid (data indexes medoids)
+(defun random-medoid (indexes medoids)
   (iterate
     (with n = (length indexes))
-    (for medoid = (~>> n random (aref indexes) (aref data)))
+    (for medoid = (~>> n random (aref indexes)))
     (finding medoid such-that (not (contains medoids medoid)))))
 
 
 (defun random-neighbor (data indexes medoids y d distance-function)
+  (declare (optimize (debug 3)))
   (let* ((n (length indexes))
          (k (length medoids))
          (cluster (random k))
-         (medoid (random-medoid data indexes medoids)))
+         (medoid (random-medoid indexes medoids)))
     (iterate
       (for i from 0 below n)
-      (for distance = (funcall distance-function
-                               (aref data (aref indexes i))
-                               (aref data (aref indexes medoid))))
+      (for distance = (coerce (funcall distance-function
+                                       (aref data (aref indexes i))
+                                       (aref data (aref indexes medoid)))
+                              'double-float))
       (cond ((> (aref d i) distance)
              (setf (aref y i) cluster
                    (aref d i) distance))
@@ -48,9 +50,10 @@
                (for j from 0 below k)
                (unless (= j cluster)
                  (next-iteration))
-               (for distance = (funcall distance-function
-                                        (aref data (aref indexes i))
-                                        (aref data (aref medoids j))))
+               (for distance = (coerce (funcall distance-function
+                                                (aref data (aref indexes i))
+                                                (aref data (aref medoids j)))
+                                       'double-float))
                (when (> (aref d i) distance)
                  (setf (aref d i) distance
                        (aref y i) j))))))
@@ -62,5 +65,5 @@
     (with result = (map-into (make-array medoids-counts) #'vect))
     (for cluster in-vector y)
     (for index in-vector indexes)
-    (vector-push-extend (aref result cluster) index)
+    (vector-push-extend index (aref result cluster))
     (finally (return result))))

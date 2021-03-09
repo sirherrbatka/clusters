@@ -43,7 +43,9 @@
     (ensure y (make-array n :initial-element 0))
     (ensure d (clusters.utils:seed data indexes medoids
                                    y distance-function))
-    (ensure distortion (reduce #'+ d))
+    (ensure distortion (handler-case (reduce #'+ d)
+                         (floating-point-overflow (e) (declare (ignore e))
+                           most-positive-double-float)))
     (clusters.utils:copy-into new-d d)
     (clusters.utils:copy-into new-medoids medoids)
     (iterate

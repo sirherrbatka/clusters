@@ -6,7 +6,7 @@
                        :reader clusters:distance-function)
    (%max-neighbor :initarg :max-neighbor
                   :reader max-neighbor)
-   (%medoids-count :initarg :medoids-counts
+   (%medoids-count :initarg :medoids-count
                    :reader medoids-count)))
 
 
