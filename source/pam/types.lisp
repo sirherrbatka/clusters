@@ -4,18 +4,23 @@
 (defclass parameters (clusters:parameters)
   ((%split-threshold
     :initarg :split-threshold
+    :accessor split-threshold
     :reader read-split-threshold)
    (%merge-threshold
     :initarg :merge-threshold
+    :accessor merge-threshold
     :reader read-merge-threshold)
    (%select-medoids-attempts-count
     :initarg :select-medoids-attempts-count
+    :accessor select-medoids-attempts-count
     :reader read-select-medoids-attempts-count)
    (%split-merge-attempts-count
     :initarg :split-merge-attempts-count
+    :accessor split-merge-attempts-count
     :reader read-split-merge-attempts-count)
    (%medoids-count
     :initarg :medoids-count
+    :accessor medoids-count
     :reader read-medoids-count))
   (:default-initargs
    :split-threshold nil

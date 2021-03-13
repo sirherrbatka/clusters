@@ -83,8 +83,7 @@
                       (max-neighbor max-neighbor)
                       (medoids-count medoids-count))
           instance))
-    (cl-ds.utils:check-value distance-function
-      (ensure-function distance-function))
+    (ensure-function distance-function)
     (cl-ds.utils:check-value max-neighbor
       (check-type max-neighbor integer)
       (assert (> max-neighbor 1)
