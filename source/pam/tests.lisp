@@ -17,14 +17,9 @@
                          :split-threshold 150
                          :split-merge-attempts-count 5
                          :medoids-count 10))
-       (distance-matrix (clusters.utils:distance-matrix
-                         nil
-                         #'metric
-                         data))
-       (clusters (clusters:cluster
-                  parameters
-                  data
-                  :distance-matrix distance-matrix)))
+       (distance-matrix (clusters.utils:distance-matrix nil #'metric data))
+       (clusters (clusters:cluster parameters data
+                                   :distance-matrix distance-matrix)))
   (declare (optimize (debug 3) (safety 3)))
   (prove:is (length (clusters:cluster-contents clusters))
             10))

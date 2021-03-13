@@ -17,9 +17,7 @@
                          :medoids-count 10
                          :max-neighbor 200
                          :distance-function #'metric))
-       (clusters (clusters:cluster
-                  parameters
-                  data)))
+       (clusters (clusters:cluster parameters data)))
   (declare (optimize (debug 3) (safety 3)))
   (prove:is (length (clusters:cluster-contents clusters))
             10))

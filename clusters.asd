@@ -49,7 +49,7 @@
                              (:file "types")
                              (:file "utils")
                              (:file "methods")))
-               (:module "clara"
+               (:module "clarans"
                 :components ((:file "package")
                              (:file "generics")
                              (:file "types")
