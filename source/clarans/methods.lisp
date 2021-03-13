@@ -75,3 +75,51 @@
             (clusters.utils:copy-into new-y y)
             (clusters.utils:copy-into new-d d)
             (incf neighbor))))))
+
+
+(defmethod initialize-instance :after ((instance parameters) &rest all)
+  (declare (ignore all))
+  (bind (((:accessors (distance-function distance-function)
+                      (max-neighbor max-neighbor)
+                      (medoids-count medoids-count))
+          instance))
+    (cl-ds.utils:check-value distance-function
+      (ensure-function distance-function))
+    (cl-ds.utils:check-value max-neighbor
+      (check-type max-neighbor integer)
+      (assert (> max-neighbor 1)
+              (max-neighbor)
+              'cl-ds:argument-value-out-of-bounds
+              :value max-neighbor
+              :argument :max-neighbor
+              :bounds '(> max-neighbor 1)
+              :format-control "MAX-NEIGHBOR should be greater then 1."))
+    (cl-ds.utils:check-value medoids-count
+      (check-type medoids-count integer)
+      (assert (> medoids-count 1)
+              (medoids-count)
+              'cl-ds:argument-value-out-of-bounds
+              :value medoids-count
+              :argument :medoids-count
+              :bounds '(> medoids-count 1)
+              :format-control "MEDOIDS-COUNT should be greater then 1."))))
+
+
+(defmethod initialize-instance :after ((instance algorithm-state) &rest all)
+  (declare (ignore all))
+  (bind (((:accessors (data clusters:data))
+          instance)
+         ((:accessors max-neighbor medoids-count) (clusters:parameters instance)))
+    (cl-ds.utils:check-value data
+      (assert (<= max-neighbor (length data))
+              (data)
+              'cl-ds:out-of-bounds
+               :value data
+               :bounds `(>= ,max-neighbor)
+               :format-control "Can't cluster when max-neighbor is above the number of elements in data!")
+      (assert (< medoids-count (length data))
+              (data)
+              'cl-ds:out-of-bounds
+              :value data
+              :bounds `(> ,medoids-count)
+              :format-control "Can't cluster when medoids-count is above or equal the number of elements in data!"))))

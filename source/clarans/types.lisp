@@ -7,11 +7,12 @@
 
 (defclass parameters (clusters:parameters)
   ((%distance-function :initarg :distance-function
+                       :accessor distance-function
                        :reader clusters:distance-function)
    (%max-neighbor :initarg :max-neighbor
-                  :reader max-neighbor)
+                  :accessor max-neighbor)
    (%medoids-count :initarg :medoids-count
-                   :reader medoids-count)))
+                   :accessor medoids-count)))
 
 
 (defclass algorithm-state (clusters:algorithm-state)

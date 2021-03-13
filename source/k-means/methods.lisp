@@ -62,3 +62,52 @@
                                        &rest all)
   (declare (ignore all))
   (select-initial-medoids state))
+
+
+(defmethod initialize-instance :after ((instance parameters) &rest all)
+  (declare (ignore all))
+  (bind (((:accessors iterations
+                      medoids-count
+                      distortion-epsilon)
+          instance))
+    (cl-ds.utils:check-value distortion-epsilon
+      (check-type distortion-epsilon real)
+      (assert (> distortion-epsilon 0)
+              (distortion-epsilon)
+              'cl-ds:argument-value-out-of-bounds
+              :value distortion-epsilon
+              :argument :distorction-epsilon
+              :bounds '(> distortion-epsilon 0)
+              :format-control "Distortion-epsilon should be above 0."))
+    (cl-ds.utils:check-value iterations
+      (check-type iterations integer)
+      (assert (> iterations 0)
+              (iterations)
+              'cl-ds:argument-value-out-of-bounds
+              :value iterations
+              :argument :iterations
+              :bounds '(> iterations 0)
+              :format-control "Iterations should be above 0."))
+    (cl-ds.utils:check-value medoids-count
+      (check-type medoids-count integer)
+      (assert (> medoids-count 1)
+              (medoids-count)
+              'cl-ds:argument-value-out-of-bounds
+              :value medoids-count
+              :argument :medoids-count
+              :bounds '(> medoids-count 1)
+              :format-control "MEDOIDS-COUNT should be greater then 1."))))
+
+
+(defmethod initialize-instance :after ((instance algorithm-state) &rest all)
+  (declare (ignore all))
+  (bind (((:accessors (data clusters:data))
+          instance)
+         ((:accessors medoids-count) (clusters:parameters instance)))
+    (cl-ds.utils:check-value data
+      (assert (< medoids-count (length data))
+              (data)
+              'cl-ds:out-of-bounds
+              :value data
+              :bounds `(> ,medoids-count)
+              :format-control "Can't cluster when medoids-count is above or equal the number of elements in data!"))))

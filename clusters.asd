@@ -8,7 +8,7 @@
   :depends-on ( :iterate       :alexandria
                 :serapeum      :documentation-utils-extensions
                 :metabang-bind :bordeaux-threads
-                :lparallel)
+                :lparallel     :cl-data-structures)
   :serial T
   :pathname "source"
   :components ((:file "aux-package")

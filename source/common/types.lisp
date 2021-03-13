@@ -38,7 +38,7 @@
 
 (defclass algorithm-state (parameters-holder)
   ((%data :initarg :data
-          :reader data)
+          :accessor data)
    (%indexes :initarg :indexes
              :accessor indexes))
   (:default-initargs :data (vect)
