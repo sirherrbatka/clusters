@@ -34,6 +34,16 @@
 (defmethod initialize-instance :after ((instance algorithm-state)
                                        &rest initargs)
   (declare (ignore initargs))
+  (bind (((:accessors (data clusters:data))
+          instance)
+         ((:accessors medoids-count) (clusters:parameters instance)))
+    (cl-ds.utils:check-value data
+      (assert (< medoids-count (length data))
+              (data)
+              'cl-ds:out-of-bounds
+              :value data
+              :bounds `(> ,medoids-count)
+              :format-control "Can't cluster when medoids-count is above or equal the number of elements in data!")))
   (reset instance))
 
 
@@ -120,17 +130,3 @@
               :argument :medoids-count
               :bounds '(> medoids-count 1)
               :format-control "MEDOIDS-COUNT should be greater then 1."))))
-
-
-(defmethod initialize-instance :after ((instance algorithm-state) &rest all)
-  (declare (ignore all))
-  (bind (((:accessors (data clusters:data))
-          instance)
-         ((:accessors medoids-count) (clusters:parameters instance)))
-    (cl-ds.utils:check-value data
-      (assert (< medoids-count (length data))
-              (data)
-              'cl-ds:out-of-bounds
-              :value data
-              :bounds `(> ,medoids-count)
-              :format-control "Can't cluster when medoids-count is above or equal the number of elements in data!"))))

@@ -98,6 +98,7 @@
 (defmethod initialize-instance :after ((instance algorithm-state)
                                        &rest initargs)
   (declare (ignore initargs))
+  (check-type (data instance) vector)
   (ensure (indexes instance)
     (iterate
       (with n = (~> instance data length))
