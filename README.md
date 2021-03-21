@@ -4,6 +4,7 @@ Variety of clustering tools for the Common Lisp
 ## Distances
 Package clusters.distance presentes distance functions, intended for use in clustering algorithms. This includes:
 * bhattacharyya
+* sinkhorn
 * group-average
 
 ## Metrics

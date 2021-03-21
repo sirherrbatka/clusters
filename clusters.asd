@@ -34,6 +34,7 @@
                 :components ((:file "package")
                              (:file "docstrings")
                              (:file "bhattacharyya")
+                             (:file "sinkhorn")
                              (:file "group-average")))
                (:module "common"
                 :components ((:file "package")
