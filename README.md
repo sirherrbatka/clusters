@@ -44,4 +44,4 @@ Each clustering algorithm has its own package exporting PARAMETERS symbol. This 
 All PARAMETERS classes contain slots intended bootsrapping silhouette values for the clusters. To obtain the silhouette value from the clustering results simply call the CLUSTERS:SILHOUETTE function. This is particulary useful if you are attempting to find the optimal number of clusters.
 
 ## PARALLELP
-Majority of the algorithms in this system has rudementary parallelization, made with the ever so useful LPARALLEL system. Please notice, that this means that you must avoid calling CLUSTER on the LPARALLEL worker thread, unless you are certain that nil has been passed as :PARALLELP value. Otherwise: deadlocks.
+Majority of the algorithms in this system have rudementary parallelization, made with the ever so useful LPARALLEL library. Please notice, that this means that (unless you are certain that nil has been passed as :PARALLELP value) you must avoid calling CLUSTER on the LPARALLEL worker thread. Otherwise: deadlocks.
