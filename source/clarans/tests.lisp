@@ -12,13 +12,12 @@
                               (iota 300 :start 500)
                               (iota 100 :start 200))
                  shuffle))
-       (parameters (make 'parameters
-                         :parallelp nil
-                         :medoids-count 10
-                         :max-neighbor 200
-                         :distance-function #'metric))
+       (parameters (make-instance 'clusters.clarans:parameters
+                                  :parallelp nil
+                                  :medoids-count 10
+                                  :max-neighbor 200
+                                  :distance-function #'metric))
        (clusters (clusters:cluster parameters data)))
-  (declare (optimize (debug 3) (safety 3)))
   (prove:is (length (clusters:cluster-contents clusters))
             10))
 
