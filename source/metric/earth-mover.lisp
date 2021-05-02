@@ -1,11 +1,10 @@
-(cl:in-package #:cl-data-structures.utils.metric)
+(cl:in-package #:clusters.metric)
 
 
-(-> earth-mover-metric ((simple-array single-float (*))
-                        (simple-array single-float (*)))
-    single-float)
+(-> earth-mover-metric (t t) single-float)
 (defun earth-mover-metric (a b)
-  (declare (optimize (speed 3) (safety 1) (space 0) (debug 0)))
+  (check-type a (simple-array single-float (*)))
+  (check-type b (simple-array single-float (*)))
   (let ((a-length (length a))
         (b-length (length b)))
     (declare (type fixnum a-length b-length))

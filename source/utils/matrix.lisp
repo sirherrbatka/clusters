@@ -35,13 +35,15 @@
 
 
 (declaim (inline square-row/column->half-matrix-index))
-(defun square-row/column->half-matrix-index (count row column)
-  (+ (- (* count row)
-        (/ (* row (1+ row))
-           2)
-        1
-        row)
-     column))
+(defun square-row/column->half-matrix-index (count j i)
+  (when (< i j)
+    (rotatef i j))
+  (+ (- (* count j)
+        (truncate (* j (1+ j))
+                  2))
+     i
+     -1
+     (- j)))
 
 
 (declaim (inline half-matrix-size->count))
@@ -108,6 +110,7 @@
 (defun distance-matrix (parallel distance-function data)
   (map-into-half-matrix parallel
                         (make-half-matrix (length data))
-                        (fork distance-function
-                              (curry #'aref data)
-                              (curry #'aref data))))
+                        (lambda (a b)
+                          (funcall distance-function
+                                   (aref data a)
+                                   (aref data b)))))

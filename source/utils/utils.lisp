@@ -18,3 +18,9 @@
       (rotatef (aref vector i)
                (aref vector (decf end))))
     (finally (return result))))
+
+
+(declaim (inline copy-into))
+(defun copy-into (destination source)
+  (declare (optimize (speed 3)))
+  (map-into destination #'identity source))

@@ -8,8 +8,9 @@
                     (distance-matrix
                      (make-array (list (length a) (length b))
                                  :element-type element-type)))
-  (declare (type vector a) (type vector b))
-  (ensure-functionf fn)
+  (check-type a vector)
+  (check-type b vector)
+  (ensure-functionf fn key)
   (when (and (emptyp a) (emptyp b))
     (return-from hausdorff 0))
   (iterate

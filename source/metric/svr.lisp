@@ -1,4 +1,4 @@
-(cl:in-package #:cl-data-structures.utils.metric)
+(cl:in-package #:clusters.metric)
 
 
 (defun same-events (grid sequence-a sequence-b to-sum)
@@ -211,8 +211,9 @@
        'single-float))))
 
 
-(defun svr-metric (a b)
-  (declare (type vector a b))
+(defun svr (a b)
+  (check-type a vector)
+  (check-type b vector)
   (let ((larger (if (> (length a) (length b))
                     a
                     b)))

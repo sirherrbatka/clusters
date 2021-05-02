@@ -16,10 +16,13 @@
 (defclass parameters (clusters:parameters)
   ((%medoids-count :initarg :medoids-count
                    :type non-negative-fixnum
-                   :reader read-medoids-count)
+                   :reader read-medoids-count
+                   :accessor medoids-count)
    (%iterations :initarg :iterations
-                :reader read-iterations)
+                :reader read-iterations
+                :accessor iterations)
    (%distortion-epsilon :initarg :distortion-epsilon
                         :type single-float
+                        :accessor distortion-epsilon
                         :reader read-distortion-epsilon))
   (:default-initargs :iterations nil))

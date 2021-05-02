@@ -1,0 +1,32 @@
+(cl:in-package #:clusters.metric)
+
+
+(defun lcs (a b &optional (test #'eql) (key #'identity))
+  (check-type a vector)
+  (check-type b vector)
+  (ensure-functionf test key)
+  (bind ((a-length (length a))
+         (b-length (length b))
+         (max-length (max a-length b-length))
+         (matrix (make-array `(,(1+ a-length) ,(1+ b-length))
+                             :element-type 'fixnum)))
+    (when (zerop max-length)
+      (return-from lcs 0.0))
+    (when (and (= a-length b-length) (every test a b))
+      (return-from lcs 0.0))
+    (iterate
+      (declare (type fixnum i))
+      (for i from 1 to a-length)
+      (for ea = (aref a (1- i)))
+      (iterate
+        (declare (type fixnum j))
+        (for j from 1 to b-length)
+        (for eb = (aref b (1- j)))
+        (if (funcall test
+                     (funcall key ea)
+                     (funcall key eb))
+            (setf (aref matrix i j) (1+ (aref matrix (1- i) (1- j))))
+            (setf (aref matrix i j) (max (aref matrix i (1- j))
+                                         (aref matrix (1- i) j))))))
+    (- 1.0 (/ (aref matrix a-length b-length)
+              max-length))))

@@ -1,14 +1,15 @@
-(cl:in-package #:cl-data-structures.utils.metric)
+(cl:in-package #:clusters.metric)
 
 
-(-> levenshtein-metric (string string) non-negative-fixnum)
-(defun levenshtein-metric (str1 str2)
+(defun levenshtein (str1 str2)
+  (check-type str1 string)
+  (check-type str2 string)
   (let ((n (length str1))
         (m (length str2)))
-    (cond ((= 0 n) (return-from levenshtein-metric m))
-          ((= 0 m) (return-from levenshtein-metric n)))
-    (let ((col (make-array (1+ m) :element-type 'non-negative-fixnum))
-          (prev-col (make-array (1+ m) :element-type 'non-negative-fixnum)))
+    (cond ((= 0 n) (return-from levenshtein m))
+          ((= 0 m) (return-from levenshtein n)))
+    (let ((col (make-array (1+ m) :element-type 'fixnum))
+          (prev-col (make-array (1+ m) :element-type 'fixnum)))
       (iterate
         (for i from 0 below (1+ m))
         (setf (aref prev-col i) i))

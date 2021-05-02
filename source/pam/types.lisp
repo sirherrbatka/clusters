@@ -2,35 +2,30 @@
 
 
 (defclass parameters (clusters:parameters)
-  ((%distance-function
-    :initarg :distance-function
-    :reader clusters:distance-function)
-   (%minimal-cluster-size
-    :initarg :minimal-cluster-size
-    :reader minimal-cluster-size)
-   (%split-threshold
+  ((%split-threshold
     :initarg :split-threshold
+    :accessor split-threshold
     :reader read-split-threshold)
    (%merge-threshold
     :initarg :merge-threshold
+    :accessor merge-threshold
     :reader read-merge-threshold)
    (%select-medoids-attempts-count
     :initarg :select-medoids-attempts-count
+    :accessor select-medoids-attempts-count
     :reader read-select-medoids-attempts-count)
    (%split-merge-attempts-count
     :initarg :split-merge-attempts-count
+    :accessor split-merge-attempts-count
     :reader read-split-merge-attempts-count)
    (%medoids-count
     :initarg :medoids-count
-    :reader read-medoids-count)
-   (%cluster-sample-size
-    :initarg :cluster-sample-size
-    :reader read-cluster-sample-size))
+    :accessor medoids-count
+    :reader read-medoids-count))
   (:default-initargs
    :split-threshold nil
    :merge-threshold nil
    :select-medoids-attempts-count 20
-   :minimal-cluster-size 1
    :split-merge-attempts-count 0))
 
 
@@ -48,16 +43,17 @@
    (%distance-matrix
     :initarg :distance-matrix
     :accessor access-distance-matrix)
-   (%indexes
-    :initarg :indexes
-    :accessor access-indexes)
    (%cluster-size
     :initarg :cluster-size
     :accessor access-cluster-size))
   (:default-initargs
    :cluster-contents nil
-   :indexes nil
+   :medoids-count nil
    :cluster-size nil
    :distance-matrix nil
-   :unfinished-clusters nil
-   ))
+   :unfinished-clusters nil))
+
+
+(defclass pam-result (clusters:result)
+  ((%distance-matrix :initarg :distance-matrix
+                     :reader read-distance-matrix)))

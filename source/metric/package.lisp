@@ -1,5 +1,11 @@
 (cl:defpackage #:clusters.metric
   (:use #:cl #:clusters.aux-package)
   (:export
+   #:average
+   #:earth-mover
+   #:euclid
    #:hausdorff
-   #:euclid))
+   #:hellinger
+   #:lcs
+   #:levenshtein
+   #:svr))

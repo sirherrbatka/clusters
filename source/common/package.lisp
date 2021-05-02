@@ -8,6 +8,7 @@
    #:silhouette-sample-count
    #:silhouette
    #:cluster-contents
+   #:cluster-indexes
    #:parameters
    #:algorithm-state
    #:algorithm-state-initialization-list
@@ -15,6 +16,10 @@
    #:data
    #:make-algorithm-state
    #:algorithm-state-class
+   #:result-class
+   #:calculate-silhouette*
+   #:calculate-silhouette
+   #:indexes
    #:obtain-result
    #:run-algorithm
    #:cluster

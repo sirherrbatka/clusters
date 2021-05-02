@@ -7,9 +7,14 @@
 
 
 (defclass result (parameters-holder)
-  ((%cluster-contents :initarg :cluster-contents
-                      :type vector
-                      :reader cluster-contents)
+  ((%cluster-indexes :initarg :cluster-indexes
+                     :type vector
+                     :reader cluster-indexes)
+   (%indexes :initarg :indexes
+             :reader indexes)
+   (%data :initarg :data
+          :type vector
+          :reader data)
    (%silhouette :initarg :silhouette
                 :type (vector single-float)
                 :reader silhouette)))
@@ -33,5 +38,8 @@
 
 (defclass algorithm-state (parameters-holder)
   ((%data :initarg :data
-          :reader data))
-  (:default-initargs :data (vect)))
+          :accessor data)
+   (%indexes :initarg :indexes
+             :accessor indexes))
+  (:default-initargs :data (vect)
+                     :indexes nil))

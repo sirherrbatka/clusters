@@ -1,17 +1,19 @@
 (cl:defpackage #:clusters.utils
   (:use #:cl #:clusters.aux-package)
   (:export
+   #:copy-into
    #:count->half-matri-size
+   #:distance-matrix
    #:draw-random-vector
    #:half-matrix-index->square-row/column
    #:half-matrix-size->count
-   #:map-into-half-matrix
-   #:distance-matrix
-   #:pmap
-   #:pmap-into
-   #:swap-if
-   #:transform
    #:lazy-shuffle
    #:make-half-matrix
+   #:map-into-half-matrix
    #:mref
-   #:square-row/column->half-matrix-index))
+   #:pmap
+   #:pmap-into
+   #:seed
+   #:square-row/column->half-matrix-index
+   #:swap-if
+   #:transform))

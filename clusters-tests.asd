@@ -9,6 +9,9 @@
   :defsystem-depends-on (:prove-asdf)
   :serial T
   :pathname "source"
-  :components ((:file "aux-package")
-               (:module "k-means"
+  :components ((:module "k-means"
+                :components ((:test-file "tests")))
+               (:module "pam"
+                :components ((:test-file "tests")))
+               (:module "clarans"
                 :components ((:test-file "tests")))))
