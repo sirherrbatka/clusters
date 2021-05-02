@@ -1,5 +1,5 @@
-(asdf:defsystem clusters
-  :name "clusters"
+(asdf:defsystem clusters-tests
+  :name "clusters-tests"
   :version "0.0.0"
   :license "BSD simplified"
   :author "Marek Kochanowicz"
