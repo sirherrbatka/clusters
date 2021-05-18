@@ -37,6 +37,8 @@
            (for other-cluster in-vector sample)
            (when (eq other-cluster cluster)
              (next-iteration))
+           (when (zerop (length other-cluster))
+             (next-iteration))
            (minimize (average-distance-to-element distance-matrix
                                                   k
                                                   other-cluster))))
