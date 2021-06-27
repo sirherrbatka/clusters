@@ -45,3 +45,6 @@ All PARAMETERS classes contain slots intended bootsrapping silhouette values for
 
 ## PARALLELP
 Majority of the algorithms in this system have rudementary parallelization, made with the ever so useful LPARALLEL library. Please notice, that this means that (unless you are certain that NIL has been passed as :PARALLELP value) you must avoid calling CLUSTER on the LPARALLEL worker thread. Otherwise: deadlocks.
+
+## Silhouette
+You can use clusters:silhouette to obtain silhouette values for each of the constructed clusters.
