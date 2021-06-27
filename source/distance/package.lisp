@@ -2,5 +2,4 @@
   (:use #:cl #:clusters.aux-package)
   (:export
    #:bhattacharyya
-   #:sinkhorn
-   #:group-average))
+   #:sinkhorn))

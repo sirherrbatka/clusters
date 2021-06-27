@@ -29,13 +29,13 @@
                              (:file "hellinger")
                              (:file "earth-mover")
                              (:file "average")
+                             (:file "group-average")
                              (:file "hausdorff")))
                (:module "distance"
                 :components ((:file "package")
                              (:file "docstrings")
                              (:file "bhattacharyya")
-                             (:file "sinkhorn")
-                             (:file "group-average")))
+                             (:file "sinkhorn")))
                (:module "common"
                 :components ((:file "package")
                              (:file "generics")

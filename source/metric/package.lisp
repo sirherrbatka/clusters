@@ -3,6 +3,7 @@
   (:export
    #:average
    #:earth-mover
+   #:group-average
    #:euclid
    #:hausdorff
    #:hellinger

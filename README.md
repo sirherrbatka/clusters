@@ -5,11 +5,11 @@ Variety of clustering tools for the Common Lisp
 Package clusters.distance presentes distance functions, intended for use in clustering algorithms. This includes:
 * bhattacharyya
 * sinkhorn
-* group-average
 
 ## Metrics
 Package clusters.metric also presents functions intended for use in clustering algorithms, However, these functions also happen to be true metrics.
 * average
+* group-average
 * earth-mover
 * euclid
 * hausdorff
