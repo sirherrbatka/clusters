@@ -3,7 +3,7 @@
 
 (defun make-algorithm-state (parameters data &rest arguments)
   (apply #'make
-         (state-class parameters)
+         (algorithm-state-class parameters)
          (apply #'algorithm-state-initialization-list
                 parameters data arguments)))
 
